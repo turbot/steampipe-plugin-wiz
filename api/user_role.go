@@ -8,11 +8,11 @@ import (
 
 // User role object
 type UserRole struct {
-	Id              string   `json:"id"`
-	Name            string   `json:"name"`
 	Description     string   `json:"description"`
-	Scopes          []string `json:"scopes"`
+	Id              string   `json:"id"`
 	IsProjectScoped bool     `json:"isProjectScoped"`
+	Name            string   `json:"name"`
+	Scopes          []string `json:"scopes"`
 }
 
 // Relay-style node for the user-role
@@ -42,20 +42,20 @@ type ListUserRolesRequestConfiguration struct {
 const (
 	queryUserRoleList = `
 query ListUserRoles($first: Int, $after: String) {
-	userRoles(first: $first, after: $after) {
-		pageInfo{
-			hasNextPage
-			endCursor
-		}
-		totalCount
-		nodes {
-			id
-			name
-			description
-			scopes
-			isProjectScoped
-		}
-	}
+  userRoles(first: $first, after: $after) {
+    pageInfo{
+      hasNextPage
+      endCursor
+    }
+    totalCount
+    nodes {
+      id
+      name
+      description
+      scopes
+      isProjectScoped
+    }
+  }
 }
 `
 )

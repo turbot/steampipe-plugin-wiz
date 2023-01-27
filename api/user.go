@@ -12,14 +12,14 @@ type Tenant struct {
 
 // User object
 type User struct {
-	Name               string   `json:"name"`
-	Id                 string   `json:"id"`
-	Email              string   `json:"email"`
 	CreatedAt          string   `json:"createdAt"`
-	LastLoginAt        string   `json:"lastLoginAt"`
+	Email              string   `json:"email"`
+	Id                 string   `json:"id"`
+	IpAddress          string   `json:"ipAddress"`
 	IsAnalyticsEnabled bool     `json:"isAnalyticsEnabled"`
 	IsSuspended        bool     `json:"isSuspended"`
-	IpAddress          string   `json:"ipAddress"`
+	LastLoginAt        string   `json:"lastLoginAt"`
+	Name               string   `json:"name"`
 	Role               UserRole `json:"role"`
 	Tenant             Tenant   `json:"tenant"`
 }
@@ -56,7 +56,7 @@ type ListUsersRequestConfiguration struct {
 const (
 	queryUserList = `
 query ListUsers($first: Int, $after: String) {
-	users(first: $first, after: $after) {
+  users(first: $first, after: $after) {
     pageInfo {
       hasNextPage
       endCursor
@@ -69,14 +69,14 @@ query ListUsers($first: Int, $after: String) {
       createdAt
       lastLoginAt
       isSuspended
-			isAnalyticsEnabled
+      isAnalyticsEnabled
       role {
-				id
-				name
-				description
-				scopes
-				isProjectScoped
-			}
+        id
+        name
+        description
+        scopes
+        isProjectScoped
+      }
       tenant {
         id
       }
@@ -88,26 +88,26 @@ query ListUsers($first: Int, $after: String) {
 
 	queryGetUser = `
 query GetUser($id: ID!) {
-	user(id: $id) {
-		name
-		id
-		email
-		createdAt
-		lastLoginAt
-		isSuspended
-		isAnalyticsEnabled
-		role {
-			id
-			name
-			description
-			scopes
-			isProjectScoped
-		}
-		tenant {
-			id
-		}
-		ipAddress
-	}
+  user(id: $id) {
+    name
+    id
+    email
+    createdAt
+    lastLoginAt
+    isSuspended
+    isAnalyticsEnabled
+    role {
+      id
+      name
+      description
+      scopes
+      isProjectScoped
+    }
+    tenant {
+      id
+    }
+    ipAddress
+  }
 }
 `
 )
