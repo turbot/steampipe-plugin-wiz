@@ -18,7 +18,9 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			Schema:      ConfigSchema,
 		},
 		DefaultTransform: transform.FromCamel().Transform(transform.NullIfZeroValue),
-		TableMap:         map[string]*plugin.Table{},
+		TableMap: map[string]*plugin.Table{
+			"wiz_user": tableWizUser(ctx),
+		},
 	}
 	return p
 }
