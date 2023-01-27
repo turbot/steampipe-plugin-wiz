@@ -6,11 +6,19 @@ import (
 )
 
 type wizConfig struct {
-	ApiToken *string `cty:"api_token"`
+	ApiToken     *string `cty:"api_token"`
+	ClientId     *string `cty:"client_id"`
+	ClientSecret *string `cty:"client_secret"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
 	"api_token": {
+		Type: schema.TypeString,
+	},
+	"client_id": {
+		Type: schema.TypeString,
+	},
+	"client_secret": {
 		Type: schema.TypeString,
 	},
 }
