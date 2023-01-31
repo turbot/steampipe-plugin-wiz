@@ -19,9 +19,10 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		},
 		DefaultTransform: transform.FromCamel(),
 		TableMap: map[string]*plugin.Table{
-			"wiz_project":   tableWizProject(ctx),
-			"wiz_user":      tableWizUser(ctx),
-			"wiz_user_role": tableWizUserRole(ctx),
+			"wiz_project":         tableWizProject(ctx),
+			"wiz_service_account": tableWizServiceAccount(ctx),
+			"wiz_user":            tableWizUser(ctx),
+			"wiz_user_role":       tableWizUserRole(ctx),
 		},
 	}
 	return p
