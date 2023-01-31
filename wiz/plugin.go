@@ -17,8 +17,9 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			NewInstance: ConfigInstance,
 			Schema:      ConfigSchema,
 		},
-		DefaultTransform: transform.FromCamel(),
+		DefaultTransform: transform.FromCamel().NullIfZero(),
 		TableMap: map[string]*plugin.Table{
+			"wiz_issue":           tableWizIssue(ctx),
 			"wiz_project":         tableWizProject(ctx),
 			"wiz_service_account": tableWizServiceAccount(ctx),
 			"wiz_user":            tableWizUser(ctx),

@@ -163,7 +163,7 @@ type GetServiceAccountResponse struct {
 	ServiceAccount ServiceAccount `json:"serviceAccount"`
 }
 
-// GetServiceAccount returns a specific user that matches the ID
+// GetServiceAccount returns a specific service account that matches the ID
 //
 // @param ctx context for configuration
 //
