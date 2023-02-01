@@ -29,10 +29,10 @@ func tableWizServiceAccount(ctx context.Context) *plugin.Table {
 		Columns: []*plugin.Column{
 			{Name: "name", Type: proto.ColumnType_STRING, Description: "The name of the service account."},
 			{Name: "id", Type: proto.ColumnType_STRING, Description: "A unique identifier of the service account."},
-			{Name: "type", Type: proto.ColumnType_STRING, Description: "The type of the service account."},
+			{Name: "type", Type: proto.ColumnType_STRING, Description: "The type of the service account. Possible values are: THIRD_PARTY, SENSOR, KUBERNETES_ADMISSION_CONTROLLER, BROKER."},
 			{Name: "client_id", Type: proto.ColumnType_STRING, Description: "The client ID of the service account."},
 			{Name: "created_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the service account was created."},
-			{Name: "authentication_source", Type: proto.ColumnType_STRING, Description: "The authentication source of the service account."},
+			{Name: "authentication_source", Type: proto.ColumnType_STRING, Description: "The authentication source of the service account. Possible values: LEGACY, MODERN."},
 			{Name: "last_rotated_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the service account was last rotated."},
 			{Name: "assigned_projects", Type: proto.ColumnType_JSON, Description: "A list of projects where the service account was assigned. If null, the service account has access to all projects."},
 			{Name: "scopes", Type: proto.ColumnType_JSON, Description: "A list of actions the service account is allowed to perform."},

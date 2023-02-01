@@ -91,8 +91,8 @@ func listWizIssues(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 			return nil, err
 		}
 
-		for _, serviceAccount := range query.Issues.Nodes {
-			d.StreamListItem(ctx, serviceAccount)
+		for _, issue := range query.Issues.Nodes {
+			d.StreamListItem(ctx, issue)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {

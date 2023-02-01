@@ -6,57 +6,11 @@ import (
 	"github.com/machinebox/graphql"
 )
 
-type Tenant struct {
-	Id string `json:"id"`
-}
-
-// User object
-type User struct {
-	CreatedAt          string   `json:"createdAt"`
-	Email              string   `json:"email"`
-	Id                 string   `json:"id"`
-	IpAddress          string   `json:"ipAddress"`
-	IsAnalyticsEnabled bool     `json:"isAnalyticsEnabled"`
-	IsSuspended        bool     `json:"isSuspended"`
-	LastLoginAt        string   `json:"lastLoginAt"`
-	Name               string   `json:"name"`
-	Role               UserRole `json:"role"`
-	Tenant             Tenant   `json:"tenant"`
-}
-
-// Relay-style node for the user
-type Users struct {
-	Nodes      []User   `json:"nodes"`
-	PageInfo   PageInfo `json:"pageInfo"`
-	TotalCount int      `json:"totalCount"`
-}
-
-// ListUsersResponse is returned by ListUsers on success
-type ListUsersResponse struct {
-	Users Users `json:"users"`
-}
-
-// GetUserResponse is returned by GetUser on success
-type GetUserResponse struct {
-	User User `json:"user"`
-}
-
-type ListUsersRequestConfiguration struct {
-	// The maximum number of results to return in a single call. To retrieve the
-	// remaining results, make another call with the returned EndCursor value.
-	//
-	// Maximum limit is 100.
-	Limit int
-
-	// When paginating forwards, the cursor to continue.
-	EndCursor string
-}
-
 // Define the query
 const (
 	queryUserList = `
-query ListUsers($first: Int, $after: String) {
-  users(first: $first, after: $after) {
+query ListUsers($first: Int, $after: String, $filter: UserFilters) {
+  users(first: $first, after: $after, filterBy: $filter) {
     pageInfo {
       hasNextPage
       endCursor
@@ -70,6 +24,7 @@ query ListUsers($first: Int, $after: String) {
       lastLoginAt
       isSuspended
       isAnalyticsEnabled
+			identityProviderType
       role {
         id
         name
@@ -80,6 +35,9 @@ query ListUsers($first: Int, $after: String) {
       tenant {
         id
       }
+			effectiveAssignedProjects {
+				id
+			}
       ipAddress
     }
   }
@@ -112,6 +70,61 @@ query GetUser($id: ID!) {
 `
 )
 
+// Assigned project information
+type UserQueryProject struct {
+	Id string `json:"id"`
+}
+
+// Tenant object
+type Tenant struct {
+	Id string `json:"id"`
+}
+
+// User object
+type User struct {
+	CreatedAt                 string             `json:"createdAt"`
+	EffectiveAssignedProjects []UserQueryProject `json:"effectiveAssignedProjects"`
+	Email                     string             `json:"email"`
+	Id                        string             `json:"id"`
+	IdentityProviderType      string             `json:"identityProviderType"`
+	IpAddress                 string             `json:"ipAddress"`
+	IsAnalyticsEnabled        bool               `json:"isAnalyticsEnabled"`
+	IsSuspended               bool               `json:"isSuspended"`
+	LastLoginAt               string             `json:"lastLoginAt"`
+	Name                      string             `json:"name"`
+	Role                      UserRole           `json:"role"`
+	Tenant                    Tenant             `json:"tenant"`
+}
+
+// Relay-style node for the user
+type UserConnection struct {
+	Nodes      []User   `json:"nodes"`
+	PageInfo   PageInfo `json:"pageInfo"`
+	TotalCount int      `json:"totalCount"`
+}
+
+// ListUsersResponse is returned by ListUsers on success
+type ListUsersResponse struct {
+	Users UserConnection `json:"users"`
+}
+
+// Fields used to filter the user response
+type ListUsersRequestConfiguration struct {
+	// Optional - filter by provider type.
+	//
+	// Possible values are: WIZ, SAML.
+	AuthProviderType string
+
+	// The maximum number of results to return in a single call. To retrieve the
+	// remaining results, make another call with the returned EndCursor value.
+	//
+	// Maximum limit is 100.
+	Limit int
+
+	// When paginating forwards, the cursor to continue.
+	EndCursor string
+}
+
 // ListUsers returns a paginated list of the portal users
 //
 // @param ctx context for configuration
@@ -126,6 +139,13 @@ func ListUsers(
 ) (*ListUsersResponse, error) {
 	// Make a request
 	req := graphql.NewRequest(queryUserList)
+
+	// Check for optional filters
+	filter := map[string]string{}
+	if options.AuthProviderType != "" {
+		filter["authProviderType"] = options.AuthProviderType
+	}
+	req.Var("filter", filter)
 
 	// Check for options and set it
 	if options.Limit > 0 {
@@ -149,6 +169,11 @@ func ListUsers(
 	}
 
 	return &data, err
+}
+
+// GetUserResponse is returned by GetUser on success
+type GetUserResponse struct {
+	User User `json:"user"`
 }
 
 // GetUser returns a specific user that matches the ID
