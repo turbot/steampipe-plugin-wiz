@@ -19,6 +19,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		},
 		DefaultTransform: transform.FromCamel().NullIfZero(),
 		TableMap: map[string]*plugin.Table{
+			"wiz_cloud_config_rule":  tableWizCloudConfigRule(ctx),
 			"wiz_issue":              tableWizIssue(ctx),
 			"wiz_project":            tableWizProject(ctx),
 			"wiz_security_framework": tableWizSecurityFramework(ctx),
