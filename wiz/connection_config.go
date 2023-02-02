@@ -9,6 +9,7 @@ type wizConfig struct {
 	ApiToken     *string `cty:"api_token"`
 	ClientId     *string `cty:"client_id"`
 	ClientSecret *string `cty:"client_secret"`
+	Url          *string `cty:"url"`
 }
 
 var ConfigSchema = map[string]*schema.Attribute{
@@ -19,6 +20,9 @@ var ConfigSchema = map[string]*schema.Attribute{
 		Type: schema.TypeString,
 	},
 	"client_secret": {
+		Type: schema.TypeString,
+	},
+	"url": {
 		Type: schema.TypeString,
 	},
 }

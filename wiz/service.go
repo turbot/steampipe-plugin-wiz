@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"strings"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -28,19 +29,21 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*api.Client, error) {
 	// Get the config
 	wizConfig := GetConfig(d.Connection)
 
-	var clientId, clientSecret, token string
+	// Get the credentials
+	clientId, clientSecret, url := getCredentialsByPrecedence(d)
+
+	// No creds
+	if url == "" {
+		return nil, fmt.Errorf("url must be configured")
+	}
 
 	/* Credential precedence
 	 * api_token set in config; if empty,
 	 * client_id and client_secret set in config
 	 */
+	var token string
 	if wizConfig.ApiToken != nil {
 		token = *wizConfig.ApiToken
-	}
-
-	if wizConfig.ClientId != nil && wizConfig.ClientSecret != nil {
-		clientId = *wizConfig.ClientId
-		clientSecret = *wizConfig.ClientSecret
 	}
 
 	// Return if no credential specified
@@ -58,7 +61,10 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*api.Client, error) {
 	}
 
 	// Start with an empty Wiz config
-	config := api.ClientConfig{ApiToken: &token}
+	config := api.ClientConfig{
+		ApiToken: &token,
+		Url:      wizConfig.Url,
+	}
 
 	// Create the client
 	client, err := api.CreateClient(ctx, config)
@@ -130,4 +136,34 @@ func GetAPIToken(ctx context.Context, d *plugin.QueryData) (*accessToken, error)
 	}
 
 	return &at, nil
+}
+
+/*
+Returns credentials by precedence.
+
+Precedence of credentials:
+  - Credentials set in config
+  - Value set using WIZ_AUTH_CLIENT_ID, WIZ_AUTH_CLIENT_SECRET, and WIZ_URL env var
+*/
+func getCredentialsByPrecedence(d *plugin.QueryData) (clientId string, clientSecret string, url string) {
+	// Get wiz config
+	wizConfig := GetConfig(d.Connection)
+
+	// Check for env vars
+	clientId = os.Getenv("WIZ_AUTH_CLIENT_ID")
+	clientSecret = os.Getenv("WIZ_AUTH_CLIENT_SECRET")
+	url = os.Getenv("WIZ_URL")
+
+	// If credentials set in the config, override it
+	if wizConfig.ClientId != nil {
+		clientId = *wizConfig.ClientId
+	}
+	if wizConfig.ClientSecret != nil {
+		clientSecret = *wizConfig.ClientId
+	}
+	if wizConfig.Url != nil {
+		url = *wizConfig.Url
+	}
+
+	return
 }
