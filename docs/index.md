@@ -2,7 +2,7 @@
 organization: Turbot
 category: ["saas"]
 icon_url: "/images/plugins/turbot/wiz.svg"
-brand_color: "#14A19C"
+brand_color: "#2D51DA"
 display_name: "Wiz"
 short_name: "wiz"
 description: "Steampipe plugin to query security controls, cloud configuration rules, security frameworks, and more from your Wiz subscription."

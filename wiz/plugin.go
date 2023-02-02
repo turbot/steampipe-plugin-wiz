@@ -23,6 +23,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"wiz_project":            tableWizProject(ctx),
 			"wiz_security_framework": tableWizSecurityFramework(ctx),
 			"wiz_service_account":    tableWizServiceAccount(ctx),
+			"wiz_subscription":       tableWizSubscription(ctx),
 			"wiz_user":               tableWizUser(ctx),
 			"wiz_user_role":          tableWizUserRole(ctx),
 		},
