@@ -2,6 +2,7 @@ package wiz
 
 import (
 	"context"
+	"time"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -21,6 +22,8 @@ func tableWizCloudConfigurationFinding(ctx context.Context) *plugin.Table {
 				{Name: "result", Require: plugin.Optional},
 				{Name: "severity", Require: plugin.Optional},
 				{Name: "status", Require: plugin.Optional},
+				{Name: "rule_id", Require: plugin.Optional},
+				{Name: "analyzed_at", Require: plugin.Optional, Operators: []string{"=", ">", ">=", "<", "<="}},
 			},
 		},
 		Get: &plugin.GetConfig{
@@ -36,8 +39,8 @@ func tableWizCloudConfigurationFinding(ctx context.Context) *plugin.Table {
 			{Name: "status", Type: proto.ColumnType_STRING, Description: "The status of the finding. Possible values: IN_PROGRESS, OPEN, REJECTED, RESOLVED."},
 			{Name: "remediation", Type: proto.ColumnType_STRING, Description: "Specifies the steps to mitigate the issue that match this rule."},
 			{Name: "resolution_reason", Type: proto.ColumnType_STRING, Description: "The status resolution reason of the finding."},
+			{Name: "rule_id", Type: proto.ColumnType_STRING, Description: "Specifies the rule against which the finding is generated.", Transform: transform.FromField("Rule.Id")},
 			{Name: "resource", Type: proto.ColumnType_JSON, Description: "Specifies the configuration of the resource detected through the finding."},
-			{Name: "rule", Type: proto.ColumnType_JSON, Description: "Specifies the rule against which the finding is generated."},
 			{Name: "subscription", Type: proto.ColumnType_JSON, Description: "Specifies the cloud account where the rule was applied and the finding is generated."},
 		},
 	}
@@ -70,11 +73,35 @@ func listWizCloudConfigurationFindings(ctx context.Context, d *plugin.QueryData,
 	if d.EqualsQualString("result") != "" {
 		options.Result = d.EqualsQualString("result")
 	}
+	if d.EqualsQualString("rule_id") != "" {
+		options.RuleId = d.EqualsQualString("rule_id")
+	}
 	if d.EqualsQualString("severity") != "" {
 		options.Severity = d.EqualsQualString("severity")
 	}
 	if d.EqualsQualString("status") != "" {
 		options.Status = d.EqualsQualString("status")
+	}
+
+	// Filter using time range
+	if d.Quals["analyzed_at"] != nil {
+		options.AnalyzedAt = api.ConfigurationFindingDateFilter{}
+		for _, q := range d.Quals["analyzed_at"].Quals {
+			givenTime := q.Value.GetTimestampValue().AsTime()
+			switch q.Operator {
+			case "=":
+				options.AnalyzedAt.After = givenTime.Add(-2 * time.Second).Format(time.RFC3339)
+				options.AnalyzedAt.Before = givenTime.Add(2 * time.Second).Format(time.RFC3339)
+			case ">=":
+				options.AnalyzedAt.After = givenTime.Add(-1 * time.Second).Format(time.RFC3339)
+			case ">":
+				options.AnalyzedAt.After = givenTime.Format(time.RFC3339)
+			case "<=":
+				options.AnalyzedAt.Before = givenTime.Add(1 * time.Second).Format(time.RFC3339)
+			case "<":
+				options.AnalyzedAt.Before = givenTime.Format(time.RFC3339)
+			}
+		}
 	}
 
 	for {
@@ -84,8 +111,8 @@ func listWizCloudConfigurationFindings(ctx context.Context, d *plugin.QueryData,
 			return nil, err
 		}
 
-		for _, serviceAccount := range query.ConfigurationFindings.Nodes {
-			d.StreamListItem(ctx, serviceAccount)
+		for _, finding := range query.ConfigurationFindings.Nodes {
+			d.StreamListItem(ctx, finding)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
