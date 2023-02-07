@@ -94,7 +94,7 @@ type ListSecurityFrameworksRequestConfiguration struct {
 	// The maximum number of results to return in a single call. To retrieve the
 	// remaining results, make another call with the returned EndCursor value.
 	//
-	// Maximum limit is 100.
+	// Maximum limit is 500.
 	Limit int
 
 	// When paginating forwards, the cursor to continue.
