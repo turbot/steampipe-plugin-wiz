@@ -117,19 +117,13 @@ type ConfigurationFindingResource struct {
 	Projects      []ConfigurationFindingResourceQueryProject
 	Region        string
 	Status        string
-	Tags          []ConfigurationFindingResourceTag
+	Tags          []ResourceTag
 	Type          string
 }
 
 // Project information
 type ConfigurationFindingResourceQueryProject struct {
 	Id string
-}
-
-// Resource tag object
-type ConfigurationFindingResourceTag struct {
-	Key   string
-	Value string
 }
 
 // Cloud configuration rule information

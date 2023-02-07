@@ -88,13 +88,13 @@ func listWizCloudConfigRules(ctx context.Context, d *plugin.QueryData, _ *plugin
 	if d.EqualsQualString("severity") != "" {
 		options.Severity = d.EqualsQualString("severity")
 	}
-	if d.EqualsQualString("enabled") != "" {
+	if d.EqualsQuals["enabled"] != nil {
 		options.Enabled = types.Bool(d.EqualsQuals["enabled"].GetBoolValue())
 	}
-	if d.EqualsQualString("has_auto_remediation") != "" {
+	if d.EqualsQuals["has_auto_remediation"] != nil {
 		options.HasAutoRemediation = types.Bool(d.EqualsQuals["has_auto_remediation"].GetBoolValue())
 	}
-	if d.EqualsQualString("supports_nrt") != "" {
+	if d.EqualsQuals["supports_nrt"] != nil {
 		options.SupportsNRT = types.Bool(d.EqualsQuals["supports_nrt"].GetBoolValue())
 	}
 

@@ -28,6 +28,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"wiz_subscription":                tableWizSubscription(ctx),
 			"wiz_user":                        tableWizUser(ctx),
 			"wiz_user_role":                   tableWizUserRole(ctx),
+			"wiz_vulnerability_finding":       tableWizVulnerabilityFinding(ctx),
 		},
 	}
 	return p
