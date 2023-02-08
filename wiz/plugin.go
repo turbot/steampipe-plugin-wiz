@@ -21,6 +21,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		TableMap: map[string]*plugin.Table{
 			"wiz_cloud_config_rule":           tableWizCloudConfigRule(ctx),
 			"wiz_cloud_configuration_finding": tableWizCloudConfigurationFinding(ctx),
+			"wiz_control":                     tableWizControl(ctx),
 			"wiz_issue":                       tableWizIssue(ctx),
 			"wiz_project":                     tableWizProject(ctx),
 			"wiz_security_framework":          tableWizSecurityFramework(ctx),
