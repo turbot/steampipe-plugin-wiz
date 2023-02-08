@@ -132,18 +132,14 @@ func ListSecurityFrameworks(
 		req.Var("after", options.EndCursor)
 	}
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data ListSecurityFrameworksResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData ListSecurityFrameworksResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }
 
 // GetSecurityFrameworkResponse is returned by GetSecurityFramework on success
@@ -169,16 +165,12 @@ func GetSecurityFramework(
 	// Set the required variables
 	req.Var("id", id)
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data GetSecurityFrameworkResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData GetSecurityFrameworkResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }

@@ -2,7 +2,7 @@
 
 # Wiz Plugin for Steampipe
 
-Use SQL to query security controls, cloud configuration rules, security frameworks, and more from your Wiz subscription.
+Use SQL to query security controls, findings, vulnerabilities, and more from your Wiz subscription.
 
 - **[Get started →](https://hub.steampipe.io/plugins/turbot/wiz)**
 - Documentation: [Table definitions & examples](https://hub.steampipe.io/plugins/turbot/wiz/tables)

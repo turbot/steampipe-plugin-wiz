@@ -84,17 +84,12 @@ func ListUserRoles(
 		req.Var("after", options.EndCursor)
 	}
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data ListUserRolesResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
-		// err = errorsHandler.BuildErrorMessage(err)
+	// execute api call
+	var responseData ListUserRolesResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }

@@ -5,7 +5,7 @@ icon_url: "/images/plugins/turbot/wiz.svg"
 brand_color: "#2D51DA"
 display_name: "Wiz"
 short_name: "wiz"
-description: "Steampipe plugin to query security controls, cloud configuration rules, security frameworks, and more from your Wiz subscription."
+description: "Steampipe plugin to query security controls, findings, vulnerabilities, and more from your Wiz subscription."
 og_description: "Query Wiz with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/wiz-social-graphic.png"
 ---

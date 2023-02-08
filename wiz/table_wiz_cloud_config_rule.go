@@ -3,11 +3,10 @@ package wiz
 import (
 	"context"
 
+	"github.com/turbot/go-kit/types"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-wiz/api"
-
-	"github.com/turbot/go-kit/types"
 )
 
 //// TABLE DEFINITION

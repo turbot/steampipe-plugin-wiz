@@ -107,7 +107,7 @@ type ListServiceAccountsRequestConfiguration struct {
 	Type string
 }
 
-// ListServiceAccounts returns a paginated list of the portal users
+// ListServiceAccounts returns a paginated list of the service accounts
 //
 // @param ctx context for configuration
 //
@@ -144,18 +144,14 @@ func ListServiceAccounts(
 		req.Var("after", options.EndCursor)
 	}
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data ListServiceAccountsResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData ListServiceAccountsResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }
 
 // GetServiceAccountResponse is returned by GetServiceAccount on success
@@ -181,16 +177,12 @@ func GetServiceAccount(
 	// Set the required variables
 	req.Var("id", id)
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data GetServiceAccountResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData GetServiceAccountResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }

@@ -183,18 +183,14 @@ func ListProjects(
 		req.Var("after", options.EndCursor)
 	}
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data ListProjectsResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData ListProjectsResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }
 
 // GetProjectResponse is returned by GetProject on success
@@ -220,16 +216,12 @@ func GetProject(
 	// Set the required variables
 	req.Var("id", id)
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data GetProjectResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData GetProjectResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }

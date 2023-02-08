@@ -106,7 +106,7 @@ type ListSubscriptionsRequestConfiguration struct {
 	Status string
 }
 
-// ListSubscriptions returns a paginated list of the portal users
+// ListSubscriptions returns a paginated list of the cloud account subscriptions
 //
 // @param ctx context for configuration
 //
@@ -140,18 +140,14 @@ func ListSubscriptions(
 		req.Var("after", options.EndCursor)
 	}
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data ListSubscriptionsResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData ListSubscriptionsResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }
 
 // GetSubscriptionResponse is returned by GetSubscription on success
@@ -177,16 +173,12 @@ func GetSubscription(
 	// Set the required variables
 	req.Var("id", id)
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data GetSubscriptionResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData GetSubscriptionResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }

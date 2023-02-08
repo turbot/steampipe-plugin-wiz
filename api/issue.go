@@ -125,12 +125,12 @@ query GetIssue($id: ID!) {
 
 // Issue note object
 type IssueNote struct {
-	CreatedAt      string                   `json:"createdAt"`
-	Id             string                   `json:"id"`
-	ServiceAccount IssueQueryServiceAccount `json:"serviceAccount"`
-	Text           string                   `json:"text"`
-	UpdatedAt      string                   `json:"updatedAt"`
-	User           IssueQueryUser           `json:"user"`
+	CreatedAt      string                   `json:"createdAt,omitempty"`
+	Id             string                   `json:"id,omitempty"`
+	ServiceAccount IssueQueryServiceAccount `json:"serviceAccount,omitempty"`
+	Text           string                   `json:"text,omitempty"`
+	UpdatedAt      string                   `json:"updatedAt,omitempty"`
+	User           IssueQueryUser           `json:"user,omitempty"`
 }
 
 // Automation action information
@@ -167,13 +167,13 @@ type IssueQueryUser struct {
 
 // Service ticket object
 type IssueServiceTickets struct {
-	Action      IssueQueryAutomationAction `json:"action"`
-	ExternalId  string                     `json:"externalId"`
-	Id          string                     `json:"id"`
-	Integration IssueQueryIntegration      `json:"integration"`
-	Name        string                     `json:"name"`
-	Project     IssueQueryProject          `json:"project"`
-	Url         string                     `json:"url"`
+	Action      IssueQueryAutomationAction `json:"action,omitempty"`
+	ExternalId  string                     `json:"externalId,omitempty"`
+	Id          string                     `json:"id,omitempty"`
+	Integration IssueQueryIntegration      `json:"integration,omitempty"`
+	Name        string                     `json:"name,omitempty"`
+	Project     IssueQueryProject          `json:"project,omitempty"`
+	Url         string                     `json:"url,omitempty"`
 }
 
 // Issue object
@@ -279,18 +279,14 @@ func ListIssues(
 		req.Var("after", options.EndCursor)
 	}
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data ListIssuesResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData ListIssuesResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }
 
 // GetIssueResponse is returned by GetIssue on success
@@ -316,16 +312,12 @@ func GetIssue(
 	// Set the required variables
 	req.Var("id", id)
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data GetIssueResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData GetIssueResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }

@@ -139,8 +139,17 @@ type ListCloudConfigRulesRequestConfiguration struct {
 	// Optional - filter CSPM Rule by enabled status.
 	Enabled *bool
 
+	// When paginating forwards, the cursor to continue.
+	EndCursor string
+
 	// Optional - if true, all the rule that has auto remediation enabled will be returned.
 	HasAutoRemediation *bool
+
+	// The maximum number of results to return in a single call. To retrieve the
+	// remaining results, make another call with the returned EndCursor value.
+	//
+	// Maximum limit is 500.
+	Limit int
 
 	// Optional - filter CSPM rules related by service type.
 	//
@@ -154,18 +163,9 @@ type ListCloudConfigRulesRequestConfiguration struct {
 
 	// Optional - if true, rule with support of "near real time" updates will be returned.
 	SupportsNRT *bool
-
-	// The maximum number of results to return in a single call. To retrieve the
-	// remaining results, make another call with the returned EndCursor value.
-	//
-	// Maximum limit is 500.
-	Limit int
-
-	// When paginating forwards, the cursor to continue.
-	EndCursor string
 }
 
-// ListCloudConfigRules returns a paginated list of the portal users
+// ListCloudConfigRules returns a paginated list of the cloud configuration rules
 //
 // @param ctx context for configuration
 //
@@ -211,18 +211,14 @@ func ListCloudConfigRules(
 		req.Var("after", options.EndCursor)
 	}
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data ListCloudConfigRulesResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData ListCloudConfigRulesResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }
 
 // GetCloudConfigRuleResponse is returned by GetCloudConfigRule on success
@@ -248,16 +244,12 @@ func GetCloudConfigRule(
 	// Set the required variables
 	req.Var("id", id)
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data GetCloudConfigRuleResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData GetCloudConfigRuleResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }

@@ -96,44 +96,44 @@ query GetConfigurationFinding($id: ID!) {
 
 // Configuration finding object
 type ConfigurationFinding struct {
-	AnalyzedAt       string
-	Id               string
-	Remediation      string
-	ResolutionReason string
-	Resource         ConfigurationFindingResource
-	Result           string
-	Rule             ConfigurationFindingQueryRule
-	Severity         string
-	Status           string
-	Subscription     ConfigurationFindingQuerySubscription
+	AnalyzedAt       string                                `json:"analyzedAt"`
+	Id               string                                `json:"id"`
+	Remediation      string                                `json:"remediation"`
+	ResolutionReason string                                `json:"resolutionReason"`
+	Resource         ConfigurationFindingResource          `json:"resource"`
+	Result           string                                `json:"result"`
+	Rule             ConfigurationFindingQueryRule         `json:"rule"`
+	Severity         string                                `json:"severity"`
+	Status           string                                `json:"status"`
+	Subscription     ConfigurationFindingQuerySubscription `json:"subscription"`
 }
 
 // Configuration finding resource object
 type ConfigurationFindingResource struct {
-	CloudPlatform string
-	Id            string
-	Name          string
-	NativeType    string
-	Projects      []ConfigurationFindingResourceQueryProject
-	Region        string
-	Status        string
-	Tags          []ResourceTag
-	Type          string
+	CloudPlatform string                                     `json:"analyzedAt,omitempty"`
+	Id            string                                     `json:"id,omitempty"`
+	Name          string                                     `json:"name,omitempty"`
+	NativeType    string                                     `json:"nativeType,omitempty"`
+	Projects      []ConfigurationFindingResourceQueryProject `json:"projects,omitempty"`
+	Region        string                                     `json:"region,omitempty"`
+	Status        string                                     `json:"status,omitempty"`
+	Tags          []ResourceTag                              `json:"tags,omitempty"`
+	Type          string                                     `json:"type,omitempty"`
 }
 
 // Project information
 type ConfigurationFindingResourceQueryProject struct {
-	Id string
+	Id string `json:"id"`
 }
 
 // Cloud configuration rule information
 type ConfigurationFindingQueryRule struct {
-	Id string
+	Id string `json:"id"`
 }
 
 // Subscription information
 type ConfigurationFindingQuerySubscription struct {
-	Id string
+	Id string `json:"id"`
 }
 
 // Relay-style node for cloud configuration findings
@@ -241,18 +241,14 @@ func ListConfigurationFindings(
 		req.Var("after", options.EndCursor)
 	}
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data ListConfigurationFindingsResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData ListConfigurationFindingsResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }
 
 // GetConfigurationFindingResponse is returned by GetConfigurationFinding on success
@@ -278,16 +274,12 @@ func GetConfigurationFinding(
 	// Set the required variables
 	req.Var("id", id)
 
-	// set header fields
-	req.Header.Set("Cache-Control", "no-cache")
-	req.Header.Set("Authorization", "Bearer "+*client.Token)
-
-	var err error
-	var data GetConfigurationFindingResponse
-
-	if err := client.Graphql.Run(ctx, req, &data); err != nil {
+	// execute api call
+	var responseData GetConfigurationFindingResponse
+	err := client.doRequest(req, &responseData)
+	if err != nil {
 		return nil, err
 	}
 
-	return &data, err
+	return &responseData, err
 }
