@@ -24,7 +24,7 @@ query ListUsers($first: Int, $after: String, $filter: UserFilters) {
       lastLoginAt
       isSuspended
       isAnalyticsEnabled
-			identityProviderType
+      identityProviderType
       role {
         id
         name
@@ -35,9 +35,9 @@ query ListUsers($first: Int, $after: String, $filter: UserFilters) {
       tenant {
         id
       }
-			effectiveAssignedProjects {
-				id
-			}
+      effectiveAssignedProjects {
+        id
+      }
       ipAddress
     }
   }
@@ -54,6 +54,7 @@ query GetUser($id: ID!) {
     lastLoginAt
     isSuspended
     isAnalyticsEnabled
+    identityProviderType
     role {
       id
       name
@@ -62,6 +63,9 @@ query GetUser($id: ID!) {
       isProjectScoped
     }
     tenant {
+      id
+    }
+    effectiveAssignedProjects {
       id
     }
     ipAddress
@@ -115,14 +119,14 @@ type ListUsersRequestConfiguration struct {
 	// Possible values are: WIZ, SAML.
 	AuthProviderType string
 
+	// When paginating forwards, the cursor to continue.
+	EndCursor string
+
 	// The maximum number of results to return in a single call. To retrieve the
 	// remaining results, make another call with the returned EndCursor value.
 	//
 	// Maximum limit is 100.
 	Limit int
-
-	// When paginating forwards, the cursor to continue.
-	EndCursor string
 }
 
 // ListUsers returns a paginated list of the portal users
@@ -164,7 +168,6 @@ func ListUsers(
 	var data ListUsersResponse
 
 	if err := client.Graphql.Run(ctx, req, &data); err != nil {
-		// err = errorsHandler.BuildErrorMessage(err)
 		return nil, err
 	}
 
@@ -202,7 +205,6 @@ func GetUser(
 	var data GetUserResponse
 
 	if err := client.Graphql.Run(ctx, req, &data); err != nil {
-		// err = errorsHandler.BuildErrorMessage(err)
 		return nil, err
 	}
 

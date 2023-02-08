@@ -10,115 +10,115 @@ import (
 const (
 	queryIssueList = `
 query ListIssues($first: Int, $after: String, $filter: IssueFilters) {
-	issues(first: $first, after: $after, filterBy: $filter) {
-		pageInfo {
-			hasNextPage
-			endCursor
-		}
-		totalCount
-		nodes {
-			id
-			description
-			status
-			severity
-			createdAt
-			updatedAt
-			resolvedAt
-			dueAt
-			rejectionExpiredAt
-			statusChangedAt
-			resolutionReason
-			control {
-				id
-			}
-			notes {
-				id
-				createdAt
-				updatedAt
-				text
-				user {
-					id
-					name
-				}
-				serviceAccount {
-					id
-				}
-			}
-			serviceTickets {
-				id
-				name
-				url
-				externalId
-				action {
-					id
-				}
-				integration {
-					id
-				}
-				project {
-					id
-					name
-				}
-			}
-			projects {
-				id
-				name
-			}
-		}
-	}
+  issues(first: $first, after: $after, filterBy: $filter) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+    nodes {
+      id
+      description
+      status
+      severity
+      createdAt
+      updatedAt
+      resolvedAt
+      dueAt
+      rejectionExpiredAt
+      statusChangedAt
+      resolutionReason
+      control {
+        id
+      }
+      notes {
+        id
+        createdAt
+        updatedAt
+        text
+        user {
+          id
+          name
+        }
+        serviceAccount {
+          id
+        }
+      }
+      serviceTickets {
+        id
+        name
+        url
+        externalId
+        action {
+          id
+        }
+        integration {
+          id
+        }
+        project {
+          id
+          name
+        }
+      }
+      projects {
+        id
+        name
+      }
+    }
+  }
 }
 `
 	queryIssueGet = `
 query GetIssue($id: ID!) {
-	issue(id: $id) {
-		id
-		description
-		status
-		severity
-		createdAt
-		updatedAt
-		resolvedAt
-		dueAt
-		rejectionExpiredAt
-		statusChangedAt
-		resolutionReason
-		control {
-			id
-		}
-		notes {
-			id
-			createdAt
-			updatedAt
-			text
-			user {
-				id
-				name
-			}
-			serviceAccount {
-				id
-			}
-		}
-		serviceTickets {
-			id
-			name
-			url
-			externalId
-			action {
-				id
-			}
-			integration {
-				id
-			}
-			project {
-				id
-				name
-			}
-		}
-		projects {
-			id
-			name
-		}
-	}
+  issue(id: $id) {
+    id
+    description
+    status
+    severity
+    createdAt
+    updatedAt
+    resolvedAt
+    dueAt
+    rejectionExpiredAt
+    statusChangedAt
+    resolutionReason
+    control {
+      id
+    }
+    notes {
+      id
+      createdAt
+      updatedAt
+      text
+      user {
+        id
+        name
+      }
+      serviceAccount {
+        id
+      }
+    }
+    serviceTickets {
+      id
+      name
+      url
+      externalId
+      action {
+        id
+      }
+      integration {
+        id
+      }
+      project {
+        id
+        name
+      }
+    }
+    projects {
+      id
+      name
+    }
+  }
 }
 `
 )
@@ -227,6 +227,9 @@ type ListIssuesResponse struct {
 
 // Fields used to filter the issue response
 type ListIssuesRequestConfiguration struct {
+	// When paginating forwards, the cursor to continue.
+	EndCursor string
+
 	// Optional - filters object
 	Filter *IssueFilter
 
@@ -235,9 +238,6 @@ type ListIssuesRequestConfiguration struct {
 	//
 	// Maximum limit is 500.
 	Limit int
-
-	// When paginating forwards, the cursor to continue.
-	EndCursor string
 }
 
 // ListIssues returns a paginated list of all the issues

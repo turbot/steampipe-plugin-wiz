@@ -2,16 +2,16 @@ package api
 
 // Security category object
 type SecurityCategory struct {
+	Description   string                `json:"description"`
 	Id            string                `json:"id"`
 	Name          string                `json:"name"`
-	Description   string                `json:"description"`
 	SubCategories []SecuritySubCategory `json:"subCategories"`
 }
 
 // Security sub-category object
 type SecuritySubCategory struct {
-	Id                       string `json:"id"`
-	Title                    string `json:"title"`
 	Description              string `json:"description"`
+	Id                       string `json:"id"`
 	ResolutionRecommendation string `json:"resolutionRecommendation"`
+	Title                    string `json:"title"`
 }

@@ -91,10 +91,8 @@ type ListSubscriptionsRequestConfiguration struct {
 	// Possible values are: AWS, GCP, OCI, Alibaba, Azure, Kubernetes, OpenShift, vSphere.
 	CloudProvider string
 
-	// Optional - filter subscriptions by it's status.
-	//
-	// Possible values: CONNECTED, DISABLED, DISCONNECTED, DISCOVERED, ERROR, INITIAL_SCANNING, PARTIALLY_CONNECTED.
-	Status string
+	// When paginating forwards, the cursor to continue.
+	EndCursor string
 
 	// The maximum number of results to return in a single call. To retrieve the
 	// remaining results, make another call with the returned EndCursor value.
@@ -102,8 +100,10 @@ type ListSubscriptionsRequestConfiguration struct {
 	// Maximum limit is 500.
 	Limit int
 
-	// When paginating forwards, the cursor to continue.
-	EndCursor string
+	// Optional - filter subscriptions by it's status.
+	//
+	// Possible values: CONNECTED, DISABLED, DISCONNECTED, DISCOVERED, ERROR, INITIAL_SCANNING, PARTIALLY_CONNECTED.
+	Status string
 }
 
 // ListSubscriptions returns a paginated list of the portal users

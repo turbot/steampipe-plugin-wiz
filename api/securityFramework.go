@@ -65,13 +65,13 @@ query GetSecurityFramework($id: ID!) {
 
 // Security framework object
 type SecurityFramework struct {
+	BuiltIn     bool               `json:"builtin"`
+	Categories  []SecurityCategory `json:"categories"`
+	Description string             `json:"description"`
+	Enabled     bool               `json:"enabled"`
 	Id          string             `json:"id"`
 	Name        string             `json:"name"`
-	Enabled     bool               `json:"enabled"`
-	BuiltIn     bool               `json:"builtin"`
-	Description string             `json:"description"`
 	PolicyTypes []string           `json:"policyTypes"`
-	Categories  []SecurityCategory `json:"categories"`
 }
 
 // Relay-style node for the security framework
@@ -91,14 +91,14 @@ type ListSecurityFrameworksRequestConfiguration struct {
 	// Optional - filter security frameworks which are enabled/disabled.
 	Enabled *bool
 
+	// When paginating forwards, the cursor to continue.
+	EndCursor string
+
 	// The maximum number of results to return in a single call. To retrieve the
 	// remaining results, make another call with the returned EndCursor value.
 	//
 	// Maximum limit is 500.
 	Limit int
-
-	// When paginating forwards, the cursor to continue.
-	EndCursor string
 }
 
 // ListSecurityFrameworks returns a paginated list of compliance frameworks

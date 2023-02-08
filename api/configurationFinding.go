@@ -155,7 +155,17 @@ type ConfigurationFindingDateFilter struct {
 
 // Fields used to filter the cloud configuration findings response
 type ListConfigurationFindingsRequestConfiguration struct {
+	// Optional - return findings detected within the given time range.
 	AnalyzedAt ConfigurationFindingDateFilter
+
+	// When paginating forwards, the cursor to continue.
+	EndCursor string
+
+	// The maximum number of results to return in a single call. To retrieve the
+	// remaining results, make another call with the returned EndCursor value.
+	//
+	// Maximum limit is 500.
+	Limit int
 
 	// Optional - filter findings by result.
 	//
@@ -174,15 +184,6 @@ type ListConfigurationFindingsRequestConfiguration struct {
 	//
 	// Possible values: IN_PROGRESS, OPEN, REJECTED, RESOLVED.
 	Status string
-
-	// The maximum number of results to return in a single call. To retrieve the
-	// remaining results, make another call with the returned EndCursor value.
-	//
-	// Maximum limit is 500.
-	Limit int
-
-	// When paginating forwards, the cursor to continue.
-	EndCursor string
 }
 
 // ListConfigurationFindings returns a paginated list of cloud configuration findings

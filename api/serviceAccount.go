@@ -10,44 +10,44 @@ import (
 const (
 	queryServiceAccountList = `
 query ListServiceAccounts($first: Int, $after: String, $filter: ServiceAccountFilters) {
-	serviceAccounts(first: $first, after: $after, filterBy: $filter) {
-		pageInfo {
-			hasNextPage
-			endCursor
-		}
-		totalCount
-		nodes {
-			id
-			name
-			type
-			createdAt
-			lastRotatedAt
-			clientId
-			scopes
-			assignedProjects {
-				id
-			}
-			authenticationSource
-		}
-	}
+  serviceAccounts(first: $first, after: $after, filterBy: $filter) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+    nodes {
+      id
+      name
+      type
+      createdAt
+      lastRotatedAt
+      clientId
+      scopes
+      assignedProjects {
+        id
+      }
+      authenticationSource
+    }
+  }
 }
 `
 
 	queryServiceAccountGet = `
 query GetServiceAccount($id: ID!) {
-	serviceAccount(id: $id) {
-		id
-		name
-		createdAt
-		lastRotatedAt
-		clientId
-		scopes
-		assignedProjects {
-			id
-		}
-		authenticationSource
-		type
-	}
+  serviceAccount(id: $id) {
+    id
+    name
+    createdAt
+    lastRotatedAt
+    clientId
+    scopes
+    assignedProjects {
+      id
+    }
+    authenticationSource
+    type
+  }
 }
 `
 )
@@ -84,6 +84,15 @@ type ListServiceAccountsResponse struct {
 
 // Fields used to filter the service account response
 type ListServiceAccountsRequestConfiguration struct {
+	// When paginating forwards, the cursor to continue.
+	EndCursor string
+
+	// The maximum number of results to return in a single call. To retrieve the
+	// remaining results, make another call with the returned EndCursor value.
+	//
+	// Maximum limit is 60.
+	Limit int
+
 	// Optional - the name of the service account.
 	Name string
 
@@ -96,15 +105,6 @@ type ListServiceAccountsRequestConfiguration struct {
 	//
 	// Possible values are: THIRD_PARTY, SENSOR, KUBERNETES_ADMISSION_CONTROLLER, BROKER.
 	Type string
-
-	// The maximum number of results to return in a single call. To retrieve the
-	// remaining results, make another call with the returned EndCursor value.
-	//
-	// Maximum limit is 60.
-	Limit int
-
-	// When paginating forwards, the cursor to continue.
-	EndCursor string
 }
 
 // ListServiceAccounts returns a paginated list of the portal users
