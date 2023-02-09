@@ -2,6 +2,7 @@ package wiz
 
 import (
 	"context"
+	"time"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -19,6 +20,7 @@ func tableWizIssue(ctx context.Context) *plugin.Table {
 			Hydrate: listWizIssues,
 			KeyColumns: plugin.KeyColumnSlice{
 				{Name: "control_id", Require: plugin.Optional},
+				{Name: "created_at", Require: plugin.Optional, Operators: []string{"=", ">", ">=", "<", "<="}},
 				{Name: "framework_category_id", Require: plugin.Optional},
 				{Name: "resolution_reason", Require: plugin.Optional},
 				{Name: "severity", Require: plugin.Optional},
@@ -74,10 +76,7 @@ func listWizIssues(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 	}
 	options.Limit = pageLimit
 
-	//
 	// Check for additional filters
-	// TODO :: Add other supported filters: createdAt, dueAt, resolvedAt, statusChangedAt
-	//
 	options.Filter = &api.IssueFilter{}
 	if d.EqualsQualString("control_id") != "" {
 		options.Filter.SourceControl = d.EqualsQualString("control_id")
@@ -93,6 +92,27 @@ func listWizIssues(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 	}
 	if d.EqualsQualString("status") != "" {
 		options.Filter.Status = d.EqualsQualString("status")
+	}
+
+	// Filter using time range
+	if d.Quals["created_at"] != nil {
+		options.Filter.CreatedAt = api.DateFilter{}
+		for _, q := range d.Quals["created_at"].Quals {
+			givenTime := q.Value.GetTimestampValue().AsTime()
+			switch q.Operator {
+			case "=":
+				options.Filter.CreatedAt.After = givenTime.Add(-2 * time.Second).Format(time.RFC3339)
+				options.Filter.CreatedAt.Before = givenTime.Add(2 * time.Second).Format(time.RFC3339)
+			case ">=":
+				options.Filter.CreatedAt.After = givenTime.Add(-1 * time.Second).Format(time.RFC3339)
+			case ">":
+				options.Filter.CreatedAt.After = givenTime.Format(time.RFC3339)
+			case "<=":
+				options.Filter.CreatedAt.Before = givenTime.Add(1 * time.Second).Format(time.RFC3339)
+			case "<":
+				options.Filter.CreatedAt.Before = givenTime.Format(time.RFC3339)
+			}
+		}
 	}
 
 	for {

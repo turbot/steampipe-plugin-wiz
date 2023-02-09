@@ -148,7 +148,7 @@ type ListConfigurationFindingsResponse struct {
 	ConfigurationFindings ConfigurationFindingConnection `json:"configurationFindings"`
 }
 
-type ConfigurationFindingDateFilter struct {
+type DateFilter struct {
 	After  string
 	Before string
 }
@@ -156,7 +156,7 @@ type ConfigurationFindingDateFilter struct {
 // Fields used to filter the cloud configuration findings response
 type ListConfigurationFindingsRequestConfiguration struct {
 	// Optional - return findings detected within the given time range.
-	AnalyzedAt ConfigurationFindingDateFilter
+	AnalyzedAt DateFilter
 
 	// When paginating forwards, the cursor to continue.
 	EndCursor string

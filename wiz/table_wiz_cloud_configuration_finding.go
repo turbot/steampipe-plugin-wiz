@@ -85,7 +85,7 @@ func listWizCloudConfigurationFindings(ctx context.Context, d *plugin.QueryData,
 
 	// Filter using time range
 	if d.Quals["analyzed_at"] != nil {
-		options.AnalyzedAt = api.ConfigurationFindingDateFilter{}
+		options.AnalyzedAt = api.DateFilter{}
 		for _, q := range d.Quals["analyzed_at"].Quals {
 			givenTime := q.Value.GetTimestampValue().AsTime()
 			switch q.Operator {

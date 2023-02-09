@@ -212,6 +212,9 @@ type Issue struct {
 
 // Issue filter object
 type IssueFilter struct {
+	// Filter Issues created before/after provided date.
+	CreatedAt DateFilter
+
 	// Filter issues using any of securityFramework | securitySubCategory | securityCategory.
 	FrameworkCategory string
 
@@ -293,6 +296,18 @@ func ListIssues(
 		}
 		if options.Filter.ResolutionReason != "" {
 			filter["resolutionReason"] = options.Filter.ResolutionReason
+		}
+
+		filter["createdAt"] = map[string]string{}
+		if options.Filter.CreatedAt.After != "" {
+			filter["createdAt"] = map[string]string{
+				"after": options.Filter.CreatedAt.After,
+			}
+		}
+		if options.Filter.CreatedAt.Before != "" {
+			filter["createdAt"] = map[string]string{
+				"before": options.Filter.CreatedAt.Before,
+			}
 		}
 	}
 	req.Var("filter", filter)
