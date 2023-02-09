@@ -49,7 +49,7 @@ func tableWizControl(ctx context.Context) *plugin.Table {
 			{Name: "last_successful_run_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time of a successful control run."},
 			{Name: "project_id", Type: proto.ColumnType_STRING, Description: "The project ID this control is scoped to."},
 			{Name: "resolution_recommendation", Type: proto.ColumnType_STRING, Description: "The guidance on how the user should address an issue that was created by this control."},
-			{Name: "supports_nrt", Type: proto.ColumnType_BOOL, Description: "", Transform: transform.FromField("SupportsNRT")},
+			{Name: "supports_nrt", Type: proto.ColumnType_BOOL, Description: "Indicates the support of 'near real time' updates.", Transform: transform.FromField("SupportsNRT")},
 			{Name: "created_by", Type: proto.ColumnType_JSON, Description: "The owner information of the control."},
 			{Name: "source_cloud_configuration_rule", Type: proto.ColumnType_JSON, Description: "The information about the cloud configuration rule."},
 			{Name: "tags", Type: proto.ColumnType_JSON, Description: "The list of tags associated with the control."},

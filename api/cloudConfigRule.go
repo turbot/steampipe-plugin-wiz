@@ -124,7 +124,7 @@ type CloudConfigRuleConnection struct {
 	TotalCount int               `json:"totalCount"`
 }
 
-// ListCloudConfigRulesResponse is returned by  ListCloudConfigRules on success
+// ListCloudConfigRulesResponse is returned by ListCloudConfigRules on success
 type ListCloudConfigRulesResponse struct {
 	CloudConfigRules CloudConfigRuleConnection `json:"cloudConfigurationRules"`
 }

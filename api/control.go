@@ -10,79 +10,79 @@ import (
 const (
 	queryControlList = `
 query ListControls($first: Int, $after: String, $filter: ControlFilters) {
-	controls(first: $first, after: $after, filterBy: $filter) {
-		pageInfo {
-			hasNextPage
-			endCursor
-		}
-		totalCount
-		nodes {
-			id
-			name
-			description
-			type
-			query
-			severity
-			enabled
-			enabledForLBI
-			enabledForMBI
-			enabledForHBI
-			enabledForUnattributed
-			resolutionRecommendation
-			createdBy {
-				id
-			}
-			createdAt
-			tags
-			scopeProject {
-				id
-			}
-			supportsNRT
-			hasAutoRemediation
-			sourceCloudConfigurationRule {
-				id
-			}
-			lastRunAt
-			lastRunError
-			lastSuccessfulRunAt
-			resolutionRecommendationPlainText
-		}
-	}
+  controls(first: $first, after: $after, filterBy: $filter) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+    nodes {
+      id
+      name
+      description
+      type
+      query
+      severity
+      enabled
+      enabledForLBI
+      enabledForMBI
+      enabledForHBI
+      enabledForUnattributed
+      resolutionRecommendation
+      createdBy {
+        id
+      }
+      createdAt
+      tags
+      scopeProject {
+        id
+      }
+      supportsNRT
+      hasAutoRemediation
+      sourceCloudConfigurationRule {
+        id
+      }
+      lastRunAt
+      lastRunError
+      lastSuccessfulRunAt
+      resolutionRecommendationPlainText
+    }
+  }
 }
 `
 
 	queryControlGet = `
 query GetControl($id: ID!) {
-	control(id: $id) {
-		id
-		name
-		type
-		query
-		severity
-		enabled
-		enabledForLBI
-		enabledForMBI
-		enabledForHBI
-		enabledForUnattributed
-		resolutionRecommendation
-		createdBy {
-			id
-		}
-		createdAt
-		tags
-		scopeProject {
-			id
-		}
-		supportsNRT
-		hasAutoRemediation
-		sourceCloudConfigurationRule {
-			id
-		}
-		lastRunAt
-		lastRunError
-		lastSuccessfulRunAt
-		resolutionRecommendationPlainText
-	}
+  control(id: $id) {
+    id
+    name
+    type
+    query
+    severity
+    enabled
+    enabledForLBI
+    enabledForMBI
+    enabledForHBI
+    enabledForUnattributed
+    resolutionRecommendation
+    createdBy {
+      id
+    }
+    createdAt
+    tags
+    scopeProject {
+      id
+    }
+    supportsNRT
+    hasAutoRemediation
+    sourceCloudConfigurationRule {
+      id
+    }
+    lastRunAt
+    lastRunError
+    lastSuccessfulRunAt
+    resolutionRecommendationPlainText
+  }
 }
 `
 )

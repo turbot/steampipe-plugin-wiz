@@ -76,8 +76,8 @@ func listWizProjects(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 			return nil, err
 		}
 
-		for _, user := range query.Projects.Nodes {
-			d.StreamListItem(ctx, user)
+		for _, project := range query.Projects.Nodes {
+			d.StreamListItem(ctx, project)
 
 			// Context can be cancelled due to manual cancellation or the limit has been hit
 			if d.RowsRemaining(ctx) == 0 {
