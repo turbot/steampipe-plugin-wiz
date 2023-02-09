@@ -2,6 +2,17 @@
 
 The `wiz_issue` table can be used to query information about all issues created in Wiz.
 
+A **Control** consists of a pre-defined **Security Graph** query and a severity level — if a control's query returns any results, an issue is generated for every result.
+
+**Note**: The table can limit a large dataset; which can increase the query execution time. It is recommended that queries to this table should include (usually in the `where` clause) at least one of these columns:
+
+- `control_id`
+- `created_at`
+- `framework_category_id`
+- `resolution_reason`
+- `severity`
+- `status`
+
 ## Examples
 
 ### Basic info

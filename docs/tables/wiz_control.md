@@ -2,7 +2,7 @@
 
 The `wiz_control` table can be used to query information about all controls in Wiz.
 
-A Control consists of a pre-defined Security Graph query and a severity level — if a Control's query returns any results, an issue is generated for every result.
+A **Control** consists of a pre-defined **Security Graph** query and a severity level — if a control's query returns any results, an issue is generated for every result.
 
 ## Examples
 

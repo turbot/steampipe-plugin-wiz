@@ -2,7 +2,7 @@
 
 The `wiz_cloud_config_rule` table can be used to query information about all the cloud configuration rule created.
 
-A Cloud Configuration Rule is a configuration check that applies to a specific cloud resource type — if a resource does not pass a Rule, a Configuration Finding is generated and associated with the resource on the Security Graph.
+A **Cloud Configuration Rule** is a configuration check that applies to a specific cloud resource type — if a resource does not pass a **Rule**, a **Configuration Finding** is generated and associated with the resource on the **Security Graph**.
 
 ## Examples
 

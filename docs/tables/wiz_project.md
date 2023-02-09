@@ -2,7 +2,7 @@
 
 The `wiz_project` table can be used to query information about the Wiz projects.
 
-Projects helps to group your cloud resources according to their users and/or purposes.
+A project helps to group the cloud resources according to their users and/or purposes.
 
 ## Examples
 
