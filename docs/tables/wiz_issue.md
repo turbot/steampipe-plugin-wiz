@@ -46,6 +46,21 @@ where
   and status = 'OPEN';
 ```
 
+### List data security open issues using framework category ID
+
+```sql
+select
+  severity,
+  count(id)
+from
+  wiz_issue
+where
+  status = 'OPEN'
+  and framework_category_id = 'wct-id-422'
+group by
+  severity;
+```
+
 ### List all open issues created in last 30 days
 
 ```sql

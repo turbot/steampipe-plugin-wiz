@@ -28,6 +28,10 @@ query ListIssues($first: Int, $after: String, $filter: IssueFilters) {
       rejectionExpiredAt
       statusChangedAt
       resolutionReason
+      entity {
+        id
+        name
+      }
       control {
         id
       }
@@ -82,6 +86,10 @@ query GetIssue($id: ID!) {
     rejectionExpiredAt
     statusChangedAt
     resolutionReason
+    entity {
+      id
+      name
+    }
     control {
       id
     }
@@ -122,6 +130,12 @@ query GetIssue($id: ID!) {
 }
 `
 )
+
+// The graph object
+type GraphEntity struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
 
 // Issue note object
 type IssueNote struct {
@@ -182,6 +196,7 @@ type Issue struct {
 	CreatedAt          string                `json:"createdAt"`
 	Description        string                `json:"description"`
 	DueAt              string                `json:"dueAt"`
+	Entity             GraphEntity           `json:"entity"`
 	Id                 string                `json:"id"`
 	Notes              []IssueNote           `json:"notes"`
 	Projects           []IssueQueryProject   `json:"projects"`
@@ -197,10 +212,16 @@ type Issue struct {
 
 // Issue filter object
 type IssueFilter struct {
+	// Filter issues using any of securityFramework | securitySubCategory | securityCategory.
+	FrameworkCategory string
+
 	// The control severity.
 	//
 	// Possible values are: INFORMATIONAL, LOW, MEDIUM, HIGH, CRITICAL.
 	Severity string
+
+	// Filter issues created by specific control ID.
+	SourceControl string
 
 	// The issue status.
 	//
@@ -258,8 +279,14 @@ func ListIssues(
 	// Check for optional filters
 	filter := map[string]interface{}{}
 	if options.Filter != nil {
+		if options.Filter.FrameworkCategory != "" {
+			filter["frameworkCategory"] = options.Filter.FrameworkCategory
+		}
 		if options.Filter.Severity != "" {
 			filter["severity"] = options.Filter.Severity
+		}
+		if options.Filter.SourceControl != "" {
+			filter["sourceControl"] = options.Filter.SourceControl
 		}
 		if options.Filter.Status != "" {
 			filter["status"] = options.Filter.Status

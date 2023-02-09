@@ -5,6 +5,7 @@ import (
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
 	"github.com/turbot/steampipe-plugin-wiz/api"
 )
 
@@ -17,6 +18,8 @@ func tableWizIssue(ctx context.Context) *plugin.Table {
 		List: &plugin.ListConfig{
 			Hydrate: listWizIssues,
 			KeyColumns: plugin.KeyColumnSlice{
+				{Name: "control_id", Require: plugin.Optional},
+				{Name: "framework_category_id", Require: plugin.Optional},
 				{Name: "resolution_reason", Require: plugin.Optional},
 				{Name: "severity", Require: plugin.Optional},
 				{Name: "status", Require: plugin.Optional},
@@ -38,7 +41,9 @@ func tableWizIssue(ctx context.Context) *plugin.Table {
 			{Name: "resolved_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the issue was resolved."},
 			{Name: "status_changed_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the issue status was last changed."},
 			{Name: "updated_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the issue was last updated."},
-			{Name: "control", Type: proto.ColumnType_JSON, Description: "A list of security controls that the issue violates."},
+			{Name: "control_id", Type: proto.ColumnType_STRING, Description: "The control ID through which this issue is generated.", Transform: transform.FromField("Control.Id")},
+			{Name: "framework_category_id", Type: proto.ColumnType_STRING, Description: "The framework category under which the issue belongs.", Transform: transform.FromQual("framework_category_id")},
+			{Name: "entity", Type: proto.ColumnType_JSON, Description: "The graph entity to which this issue is related."},
 			{Name: "notes", Type: proto.ColumnType_JSON, Description: "The issue related notes."},
 			{Name: "projects", Type: proto.ColumnType_JSON, Description: "A list of projects to which the issue is related."},
 			{Name: "service_tickets", Type: proto.ColumnType_JSON, Description: "Specifies the related issues from ticket services."},
@@ -58,7 +63,7 @@ func listWizIssues(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 
 	options := &api.ListIssuesRequestConfiguration{}
 
-	// Default set to 60.
+	// Default set to 500.
 	// This is the maximum number of items can be requested.
 	pageLimit := 500
 
@@ -74,6 +79,12 @@ func listWizIssues(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 	// TODO :: Add other supported filters: createdAt, dueAt, resolvedAt, statusChangedAt
 	//
 	options.Filter = &api.IssueFilter{}
+	if d.EqualsQualString("control_id") != "" {
+		options.Filter.SourceControl = d.EqualsQualString("control_id")
+	}
+	if d.EqualsQualString("framework_category_id") != "" {
+		options.Filter.FrameworkCategory = d.EqualsQualString("framework_category_id")
+	}
 	if d.EqualsQualString("resolution_reason") != "" {
 		options.Filter.ResolutionReason = d.EqualsQualString("resolution_reason")
 	}

@@ -149,6 +149,9 @@ type ListControlsRequestConfiguration struct {
 	// When paginating forwards, the cursor to continue.
 	EndCursor string
 
+	// Optional - filter controls using any of securityFramework | securitySubCategory | securityCategory.
+	FrameworkCategory string
+
 	// Optional - filter controls which their related cloud configuration rule have auto remediation.
 	HasAutoRemediation *bool
 
@@ -191,6 +194,9 @@ func ListControls(
 	filter := map[string]interface{}{}
 	if options.Enabled != nil {
 		filter["enabled"] = options.Enabled
+	}
+	if options.FrameworkCategory != "" {
+		filter["frameworkCategory"] = options.FrameworkCategory
 	}
 	if options.HasAutoRemediation != nil {
 		filter["hasAutoRemediation"] = options.HasAutoRemediation

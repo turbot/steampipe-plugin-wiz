@@ -20,6 +20,7 @@ func tableWizControl(ctx context.Context) *plugin.Table {
 			Hydrate: listWizControls,
 			KeyColumns: plugin.KeyColumnSlice{
 				{Name: "enabled", Require: plugin.Optional, Operators: []string{"<>", "="}},
+				{Name: "framework_category_id", Require: plugin.Optional},
 				{Name: "has_auto_remediation", Require: plugin.Optional, Operators: []string{"<>", "="}},
 				{Name: "project_id", Require: plugin.Optional},
 				{Name: "severity", Require: plugin.Optional},
@@ -51,8 +52,9 @@ func tableWizControl(ctx context.Context) *plugin.Table {
 			{Name: "supports_nrt", Type: proto.ColumnType_BOOL, Description: "", Transform: transform.FromField("SupportsNRT")},
 			{Name: "created_by", Type: proto.ColumnType_JSON, Description: "The owner information of the control."},
 			{Name: "source_cloud_configuration_rule", Type: proto.ColumnType_JSON, Description: "The information about the cloud configuration rule."},
-			{Name: "tags", Type: proto.ColumnType_JSON, Description: "The list of tags associated with the control"},
+			{Name: "tags", Type: proto.ColumnType_JSON, Description: "The list of tags associated with the control."},
 			{Name: "query", Type: proto.ColumnType_JSON, Description: "The query that the control runs. If query is null, this is a built in control with custom logic."},
+			{Name: "framework_category_id", Type: proto.ColumnType_STRING, Description: "The security framework ID that the control is associated with.", Transform: transform.FromQual("framework_category_id")},
 		},
 	}
 }
@@ -83,6 +85,9 @@ func listWizControls(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 	// Check for additional filters
 	if d.EqualsQuals["enabled"] != nil {
 		options.Enabled = types.Bool(d.EqualsQuals["enabled"].GetBoolValue())
+	}
+	if d.EqualsQualString("framework_category_id") != "" {
+		options.FrameworkCategory = d.EqualsQualString("framework_category_id")
 	}
 	if d.EqualsQuals["has_auto_remediation"] != nil {
 		options.HasAutoRemediation = types.Bool(d.EqualsQuals["has_auto_remediation"].GetBoolValue())
