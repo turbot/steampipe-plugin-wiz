@@ -20,12 +20,18 @@ type accessToken struct {
 
 // getClient:: returns Wiz client after authentication
 func getClient(ctx context.Context, d *plugin.QueryData) (*api.Client, error) {
-	// Load connection from cache, which preserves throttling protection etc
-	cacheKey := "wiz"
-	if cachedData, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
-		return cachedData.(*api.Client), nil
+	conn, err := clientCached(ctx, d, nil)
+	if err != nil {
+		return nil, err
 	}
+	return conn.(*api.Client), nil
+}
 
+// Get the cached version of the client
+var clientCached = plugin.HydrateFunc(clientUncached).Memoize()
+
+// clientUncached returns the Wiz client and cached the data
+func clientUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (any, error) {
 	// Get the config
 	wizConfig := GetConfig(d.Connection)
 
@@ -71,9 +77,6 @@ func getClient(ctx context.Context, d *plugin.QueryData) (*api.Client, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error creating client: %s", err.Error())
 	}
-
-	// Save to cache
-	d.ConnectionManager.Cache.Set(cacheKey, client)
 
 	return client, nil
 }
