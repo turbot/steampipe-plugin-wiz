@@ -98,7 +98,7 @@ type ListServiceAccountsRequestConfiguration struct {
 
 	// Optional - the service account authentication source.
 	//
-	// Possible values: LEGACY, MODERN.
+	// Possible values: LEGACY, MODERN. Default set to MODERN.
 	Source string
 
 	// Optional - the service account type.
@@ -123,7 +123,10 @@ func ListServiceAccounts(
 	req := graphql.NewRequest(queryServiceAccountList)
 
 	// Check for optional filters
-	filter := map[string]string{}
+	filter := map[string]string{
+		// Default
+		"source": "MODERN",
+	}
 	if options.Name != "" {
 		filter["name"] = options.Name
 	}

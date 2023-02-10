@@ -83,13 +83,18 @@ func clientUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 
 // GetAPIToken retrieves a new API token using the clientId and secret
 func GetAPIToken(ctx context.Context, d *plugin.QueryData) (*accessToken, error) {
-
-	// have we already created and cached the token?
-	cacheKey := "wiz.session_token"
-	if ts, ok := d.ConnectionManager.Cache.Get(cacheKey); ok {
-		return ts.(*accessToken), nil
+	tokenResponse, err := apiTokenCached(ctx, d, nil)
+	if err != nil {
+		return nil, err
 	}
+	return tokenResponse.(*accessToken), nil
+}
 
+// Get the cached version of the token response
+var apiTokenCached = plugin.HydrateFunc(apiTokenUncached).Memoize()
+
+// apiTokenUncached returns the token after authenticating using clientId and secret
+func apiTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (any, error) {
 	plugin.Logger(ctx).Debug("Creating session token", "connection", d.Connection.Name)
 
 	// Get Wiz config
@@ -128,6 +133,7 @@ func GetAPIToken(ctx context.Context, d *plugin.QueryData) (*accessToken, error)
 	// Read the response body
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
+		plugin.Logger(ctx).Error("Failed reading response body", "body", string(bodyBytes), "error", err)
 		return nil, fmt.Errorf("failed reading response body: %v", err)
 	}
 
@@ -135,7 +141,8 @@ func GetAPIToken(ctx context.Context, d *plugin.QueryData) (*accessToken, error)
 	at := accessToken{}
 	jsonErr := json.Unmarshal(bodyBytes, &at)
 	if jsonErr != nil {
-		return nil, fmt.Errorf("failed parsing JSON body: %v", jsonErr)
+		plugin.Logger(ctx).Error("Failed to parse token response", jsonErr)
+		return nil, fmt.Errorf("failed to parse token response: %v", jsonErr)
 	}
 
 	return &at, nil
