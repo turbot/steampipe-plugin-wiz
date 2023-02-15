@@ -24,6 +24,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"wiz_control":                     tableWizControl(ctx),
 			"wiz_issue":                       tableWizIssue(ctx),
 			"wiz_project":                     tableWizProject(ctx),
+			"wiz_security_category":           tableWizSecurityCategory(ctx),
 			"wiz_security_framework":          tableWizSecurityFramework(ctx),
 			"wiz_service_account":             tableWizServiceAccount(ctx),
 			"wiz_subscription":                tableWizSubscription(ctx),

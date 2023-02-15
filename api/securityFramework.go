@@ -65,13 +65,13 @@ query GetSecurityFramework($id: ID!) {
 
 // Security framework object
 type SecurityFramework struct {
-	BuiltIn     bool               `json:"builtin"`
-	Categories  []SecurityCategory `json:"categories"`
-	Description string             `json:"description"`
-	Enabled     bool               `json:"enabled"`
-	Id          string             `json:"id"`
-	Name        string             `json:"name"`
-	PolicyTypes []string           `json:"policyTypes"`
+	BuiltIn     bool                             `json:"builtin"`
+	Categories  []SecurityFrameworkQueryCategory `json:"categories"`
+	Description string                           `json:"description"`
+	Enabled     bool                             `json:"enabled"`
+	Id          string                           `json:"id"`
+	Name        string                           `json:"name"`
+	PolicyTypes []string                         `json:"policyTypes"`
 }
 
 // Relay-style node for the security framework
@@ -79,6 +79,10 @@ type SecurityFrameworkConnection struct {
 	Nodes      []SecurityFramework `json:"nodes"`
 	PageInfo   PageInfo            `json:"pageInfo"`
 	TotalCount int                 `json:"totalCount"`
+}
+
+type SecurityFrameworkQueryCategory struct {
+	Id string `json:"id"`
 }
 
 // ListSecurityFrameworksResponse is returned by ListSecurityFrameworks on success
