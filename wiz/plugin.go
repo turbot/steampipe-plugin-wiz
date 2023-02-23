@@ -5,6 +5,7 @@ import (
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-wiz/errors"
 )
 
 const pluginName = "steampipe-plugin-wiz"
@@ -16,6 +17,9 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 		ConnectionConfigSchema: &plugin.ConnectionConfigSchema{
 			NewInstance: ConfigInstance,
 			Schema:      ConfigSchema,
+		},
+		DefaultGetConfig: &plugin.GetConfig{
+			ShouldIgnoreError: errors.NotFoundError,
 		},
 		DefaultTransform: transform.FromCamel().NullIfZero(),
 		TableMap: map[string]*plugin.Table{
