@@ -32,7 +32,7 @@ func tableWizSubscription(ctx context.Context) *plugin.Table {
 			{Name: "status", Type: proto.ColumnType_STRING, Description: "Cloud Account connectivity status as affected by configured connectors.  Possible values: CONNECTED, DISABLED, DISCONNECTED, DISCOVERED, ERROR, INITIAL_SCANNING, PARTIALLY_CONNECTED."},
 			{Name: "last_scanned_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the cloud account was last scanned."},
 			{Name: "container_count", Type: proto.ColumnType_INT, Description: "Number of containers that are part of this cloud account."},
-			{Name: "external_id", Type: proto.ColumnType_STRING, Description: "External subscription id from cloud provider (subscriptionId in security graph)."},
+			{Name: "external_id", Type: proto.ColumnType_STRING, Description: "External subscription ID from a cloud provider (subscriptionId in security graph)."},
 			{Name: "resource_count", Type: proto.ColumnType_INT, Description: "Number of resources that are part of this cloud account."},
 			{Name: "virtual_machine_count", Type: proto.ColumnType_INT, Description: "Number of virtual machines that are part of this cloud account."},
 			{Name: "linked_projects", Type: proto.ColumnType_JSON, Description: "A list of projects, this cloud account is assigned to."},

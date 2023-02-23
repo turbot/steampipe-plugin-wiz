@@ -157,13 +157,13 @@ func getWizIssue(ctx context.Context, d *plugin.QueryData, h *plugin.HydrateData
 	// Create client
 	conn, err := getClient(ctx, d)
 	if err != nil {
-		plugin.Logger(ctx).Error("wiz_issue.getIssue", "connection_error", err)
+		plugin.Logger(ctx).Error("wiz_issue.getWizIssue", "connection_error", err)
 		return nil, err
 	}
 
 	query, err := api.GetIssue(context.Background(), conn, id)
 	if err != nil {
-		plugin.Logger(ctx).Error("wiz_issue.getIssue", "query_error", err)
+		plugin.Logger(ctx).Error("wiz_issue.getWizIssue", "query_error", err)
 		return nil, err
 	}
 

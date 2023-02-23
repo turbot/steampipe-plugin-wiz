@@ -32,7 +32,7 @@ where
   is_project_scoped;
 ```
 
-### Count user per user role
+### Count users per role
 
 ```sql
 select

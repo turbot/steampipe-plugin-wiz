@@ -4,7 +4,7 @@ The `wiz_cloud_configuration_finding` table can be used to query information abo
 
 A finding is generated when a configuration check, cloud configuration rule is applies to a specific cloud resource type.
 
-**Note**: The table can limit a large dataset based on the number of rules and the number of cloud accounts where the rule is applied to; which can increase the query execution time. It is recommended that queries to this table should include (usually in the `where` clause) at least one of these columns:
+**Note**: The table can return a large dataset based on the number of rules and the number of cloud accounts where the rule is applied; which can increase the query execution time. It is recommended that queries to this table should include (usually in the `where` clause) at least one of these columns:
 
 - `analyzed_at`
 - `result`
@@ -27,7 +27,7 @@ from
   wiz_cloud_configuration_finding;
 ```
 
-### List all failed resource with high severity
+### List all failed resources with high severity
 
 ```sql
 select
@@ -60,7 +60,7 @@ where
   and severity = 'HIGH';
 ```
 
-### List all findings detected in last 3 days
+### List all findings detected in the last 3 days
 
 ```sql
 select
@@ -78,7 +78,7 @@ where
   and analyzed_at > (current_timestamp - interval '3 day');
 ```
 
-### List failed resource with rule information
+### List failed resources with rule information
 
 ```sql
 select

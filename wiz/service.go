@@ -153,7 +153,7 @@ Returns credentials by precedence.
 
 Precedence of credentials:
   - Credentials set in config
-  - Value set using WIZ_AUTH_CLIENT_ID, WIZ_AUTH_CLIENT_SECRET, and WIZ_URL env var
+  - Value set using WIZ_AUTH_CLIENT_ID, WIZ_AUTH_CLIENT_SECRET, and WIZ_URL env variables
 */
 func getCredentialsByPrecedence(d *plugin.QueryData) (clientId string, clientSecret string, url string) {
 	// Get wiz config

@@ -39,7 +39,7 @@ func tableWizCloudConfigRule(ctx context.Context) *plugin.Table {
 			{Name: "created_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the rule was created."},
 			{Name: "built_in", Type: proto.ColumnType_BOOL, Description: "Indicates whether the rule is built-in or custom."},
 			{Name: "description", Type: proto.ColumnType_STRING, Description: "The description of the rule."},
-			{Name: "short_id", Type: proto.ColumnType_STRING, Description: "A short unique identifier for the rule."},
+			{Name: "short_id", Type: proto.ColumnType_STRING, Description: "A short unique identifier of the rule."},
 			{Name: "function_as_role", Type: proto.ColumnType_BOOL, Description: "Make this rule also function as a control which means findings by this control will also trigger Issues."},
 			{Name: "has_auto_remediation", Type: proto.ColumnType_BOOL, Description: "If true, the rule will automatically remediate the failed resources as per remediation steps defined in the rule."},
 			{Name: "remediation_instructions", Type: proto.ColumnType_STRING, Description: "A set of instructions provided for the remediation."},

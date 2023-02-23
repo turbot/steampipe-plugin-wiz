@@ -30,7 +30,7 @@ func tableWizSecurityCategory(ctx context.Context) *plugin.Table {
 			{Name: "id", Type: proto.ColumnType_STRING, Description: "A unique identifier of the category."},
 			{Name: "description", Type: proto.ColumnType_STRING, Description: "The description of the category."},
 			{Name: "framework_id", Type: proto.ColumnType_STRING, Description: "The ID of security framework, the category is part of.", Transform: transform.FromField("Framework.Id")},
-			{Name: "sub_categories", Type: proto.ColumnType_JSON, Description: "A list of security category."},
+			{Name: "sub_categories", Type: proto.ColumnType_JSON, Description: "A list of security sub-categories."},
 		},
 	}
 }

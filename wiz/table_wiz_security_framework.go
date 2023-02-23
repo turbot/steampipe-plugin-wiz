@@ -31,7 +31,7 @@ func tableWizSecurityFramework(ctx context.Context) *plugin.Table {
 			{Name: "enabled", Type: proto.ColumnType_BOOL, Description: "If true, the security framework is enabled."},
 			{Name: "built_in", Type: proto.ColumnType_BOOL, Description: "If true, the security framework is managed by Wiz."},
 			{Name: "description", Type: proto.ColumnType_STRING, Description: "The description of the security framework."},
-			{Name: "policy_types", Type: proto.ColumnType_JSON, Description: "A list of security framework policy type."},
+			{Name: "policy_types", Type: proto.ColumnType_JSON, Description: "A list of security framework policy types."},
 			{Name: "categories", Type: proto.ColumnType_JSON, Description: "A list of security category."},
 		},
 	}

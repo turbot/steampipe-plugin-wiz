@@ -56,12 +56,12 @@ steampipe plugin install wiz
 
 ### Credentials
 
-| Item        | Description                                                                                                                                                                                                          |
-| ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Credentials | Wiz requires your application's **Client ID** and **Client Secret** to authenticate all requests. You can find this value on the `Settings > Service Accounts` page.                                                 |
-| Permissions | Assign `read:all` scope to your service account.                                                                                                                                                                     |
-| Radius      | Each connection represents a single Wiz installation.                                                                                                                                                                |
-| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/wiz.spc`)<br />2. Credentials specified in environment variables, e.g., `WIZ_AUTH_CLIENT_ID`, `WIZ_AUTH_CLIENT_SECRET` and `WIZ_URL`. |
+| Item        | Description                                                                                                                                                                                                                                                                          |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Credentials | Wiz requires your application's **Client ID** and **Client Secret** to authenticate all requests. You can find this value on the `Settings > Service Accounts` page. Also, provide the [GraphQL endpoint](https://docs.wiz.io/wiz-docs/docs/using-the-wiz-api#the-graphql-endpoint). |
+| Permissions | Assign `read:all` scope to your service account.                                                                                                                                                                                                                                     |
+| Radius      | Each connection represents a single Wiz installation.                                                                                                                                                                                                                                |
+| Resolution  | 1. Credentials explicitly set in a steampipe config file (`~/.steampipe/config/wiz.spc`)<br />2. Credentials specified in environment variables, e.g., `WIZ_AUTH_CLIENT_ID`, `WIZ_AUTH_CLIENT_SECRET` and `WIZ_URL`.                                                                 |
 
 ### Configuration
 
@@ -71,18 +71,20 @@ Installing the latest wiz plugin will create a config file (`~/.steampipe/config
 connection "wiz" {
   plugin = "wiz"
 
-  # Application's Client ID.
+  # `client_id` (required) - Application's Client ID.
+  # You can find this value on https://app.wiz.io/settings/service-accounts page.
   # This can also be set via the `WIZ_AUTH_CLIENT_ID` environment variable.
   # client_id = "8rp38Z6yb2cOSTeaMpPIpepAt99eg3ry"
 
-  # Application's Client Secret.
+  # `client_secret` (required) - Application's Client Secret.
+  # You can find this value on https://app.wiz.io/settings/service-accounts page.
   # This can also be set via the `WIZ_AUTH_CLIENT_SECRET` environment variable.
   # client_secret = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndJUnZwVWpBTU93WHQ5ZG5CXzRrVCJ9"
 
-  # Wiz API endpoint. This varies for each Wiz deployment.
+  # `url` (required) - Wiz API endpoint. This varies for each Wiz deployment.
   # See https://docs.wiz.io/wiz-docs/docs/using-the-wiz-api#the-graphql-endpoint.
   # This can also be set via the `WIZ_URL` environment variable.
-  # url = "https://api.app.wiz.io/graphql"
+  # url = "https://api.us1.app.wiz.io/graphql"
 }
 ```
 
@@ -93,7 +95,7 @@ The Wiz plugin will use the standard Wiz environment variables to obtain credent
 ```sh
 export WIZ_AUTH_CLIENT_ID=8rp38Z6yb2cOSTeaMpPIpepAt99eg3ry
 export WIZ_AUTH_CLIENT_SECRET=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndJUnZwVWpBTU93WHQ5ZG5CXzRrVCJ9
-export WIZ_URL=https://api.app.wiz.io/graphql
+export WIZ_URL=https://api.us1.app.wiz.io/graphql
 ```
 
 ## Get involved

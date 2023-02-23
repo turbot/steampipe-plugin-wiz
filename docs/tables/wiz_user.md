@@ -1,6 +1,6 @@
 # Table: wiz_user
 
-The `wiz_user` table can be used to query information about all users let you authenticate to Wiz.
+The `wiz_user` table can be used to query information about all users authenticated to Wiz.
 
 ## Examples
 

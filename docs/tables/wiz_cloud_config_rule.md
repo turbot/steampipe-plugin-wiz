@@ -96,7 +96,7 @@ from
     and f.analyzed_at > (current_timestamp - interval '3 day');
 ```
 
-### List rules with auto remediation enabled
+### List rules with auto-remediation enabled
 
 ```sql
 select
