@@ -26,7 +26,7 @@ Configure your subscription details in `~/.steampipe/config/wiz.spc`:
 ```hcl
 connection "wiz" {
   plugin = "wiz"
-
+  # Authentication information
   client_id     = "8rp38Z6yb2cOSTeaMpPIpepAt99eg3ry"
   client_secret = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndJUnZwVWpBTU93WHQ5ZG5CXzRrVCJ9"
   url           = "https://api.us1.app.wiz.io/graphql"
