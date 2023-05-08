@@ -1,6 +1,6 @@
 package api
 
 type ClientConfig struct {
-	ApiToken *string
-	Url      *string
+	Token *string
+	Url   *string
 }

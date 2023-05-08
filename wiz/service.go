@@ -15,7 +15,7 @@ import (
 )
 
 type accessToken struct {
-	Token string `json:"access_token"`
+	AccessToken string `json:"access_token"`
 }
 
 // getClient:: returns Wiz client after authentication
@@ -49,16 +49,16 @@ func clientUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 	}
 
 	// Using client_id and client_secret credentials
-	accessTokenResponse, err := GetAPIToken(ctx, d)
+	accessTokenResponse, err := GetAccessToken(ctx, d)
 	if err != nil {
 		return nil, err
 	}
-	token := accessTokenResponse.Token
+	accessToken := accessTokenResponse.AccessToken
 
 	// Start with an empty Wiz config
 	config := api.ClientConfig{
-		ApiToken: &token,
-		Url:      wizConfig.Url,
+		Token: &accessToken,
+		Url:   wizConfig.Url,
 	}
 
 	// Create the client
@@ -70,9 +70,9 @@ func clientUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 	return client, nil
 }
 
-// GetAPIToken retrieves a new API token using the clientId and secret
-func GetAPIToken(ctx context.Context, d *plugin.QueryData) (*accessToken, error) {
-	tokenResponse, err := apiTokenCached(ctx, d, nil)
+// GetAccessToken retrieves a new access token using the clientId and secret
+func GetAccessToken(ctx context.Context, d *plugin.QueryData) (*accessToken, error) {
+	tokenResponse, err := accessTokenCached(ctx, d, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -80,11 +80,11 @@ func GetAPIToken(ctx context.Context, d *plugin.QueryData) (*accessToken, error)
 }
 
 // Get the cached version of the token response
-var apiTokenCached = plugin.HydrateFunc(apiTokenUncached).Memoize()
+var accessTokenCached = plugin.HydrateFunc(accessTokenUncached).Memoize()
 
-// apiTokenUncached returns the token after authenticating using clientId and secret
-func apiTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (any, error) {
-	plugin.Logger(ctx).Debug("Creating session token", "connection", d.Connection.Name)
+// accessTokenUncached returns the access token after authenticating using clientId and secret
+func accessTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (any, error) {
+	plugin.Logger(ctx).Debug("Creating access token", "connection", d.Connection.Name)
 
 	// Get Wiz config
 	wizConfig := GetConfig(d.Connection)
@@ -111,7 +111,7 @@ func apiTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrat
 	r.Header.Add("Encoding", "UTF-8")
 	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	plugin.Logger(ctx).Debug("GetAPIToken", "Getting access token...")
+	plugin.Logger(ctx).Debug("GetAccessToken", "Getting access token...")
 
 	// Make a request to get the token
 	resp, err := client.Do(r)

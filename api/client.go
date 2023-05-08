@@ -18,7 +18,7 @@ type Client struct {
 
 func CreateClient(ctx context.Context, config ClientConfig) (*Client, error) {
 	return &Client{
-		Token:   config.ApiToken,
+		Token:   config.Token,
 		Graphql: graphql.NewClient(types.StringValue(config.Url)),
 	}, nil
 }
