@@ -1,8 +1,8 @@
 # Table: wiz_cloud_config_rule
 
-The `wiz_cloud_config_rule` table can be used to query information about all the cloud configuration rule created.
+The `wiz_cloud_config_rule` table can be used to query information about all the cloud configuration rules.
 
-A **Cloud Configuration Rule** is a configuration check that applies to a specific cloud resource type — if a resource does not pass a **Rule**, a **Configuration Finding** is generated and associated with the resource on the **Security Graph**.
+A **Cloud Configuration Rule** is a configuration check that applies to a specific cloud resource type - if a resource does not pass a **Rule**, a **Configuration Finding** is generated and associated with the resource on the **Security Graph**.
 
 ## Examples
 
@@ -69,7 +69,7 @@ where
   and target_native_types ?| array['bucket'];
 ```
 
-### List all findings of a rule specific to AWS S3 bucket in last 3 days
+### List all findings of a rule specific to AWS S3 bucket in the last 3 days
 
 ```sql
 with list_s3_bucket_rules as (
