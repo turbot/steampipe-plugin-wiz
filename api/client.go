@@ -33,7 +33,7 @@ func (client *Client) DoRequest(req *graphql.Request, responseData interface{}) 
 	req.Header.Set("Cache-Control", "no-cache")
 	req.Header.Set("Authorization", "Bearer "+*client.Token)
 
-	// define a Context for the request
+	// define a context for the request
 	ctx := context.Background()
 
 	// run it and capture the response

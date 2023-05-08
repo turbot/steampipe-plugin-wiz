@@ -44,7 +44,7 @@ where
 
 - **[Table definitions & examples →](/plugins/turbot/wiz/tables)**
 
-## Get started
+## Quick start
 
 ### Install
 
@@ -88,9 +88,7 @@ connection "wiz" {
 }
 ```
 
-### Credentials from Environment Variables
-
-The Wiz plugin will use the standard Wiz environment variables to obtain credentials **only if other arguments (`client_id`, `client_secret` and `url`) are not specified** in the connection:
+Alternatively, you can also use the standard Wiz environment variables to obtain credentials **only if other arguments (`client_id`, `client_secret` and `url`) are not specified** in the connection:
 
 ```sh
 export WIZ_AUTH_CLIENT_ID=8rp38Z6yb2cOSTeaMpPIpepAt99eg3ry

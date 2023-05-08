@@ -11,7 +11,9 @@ Use SQL to query security controls, findings, vulnerabilities, and more from you
 
 ## Quick start
 
-Install the plugin with [Steampipe](https://steampipe.io):
+### Install
+
+Download and install the latest Wiz plugin:
 
 ```shell
 steampipe plugin install wiz
@@ -19,7 +21,33 @@ steampipe plugin install wiz
 
 Configure your [credentials](https://hub.steampipe.io/plugins/turbot/wiz#credentials) and [config file](https://hub.steampipe.io/plugins/turbot/wiz#configuration).
 
-Run a query:
+Configure your subscription details in `~/.steampipe/config/wiz.spc`:
+
+```hcl
+connection "wiz" {
+  plugin = "wiz"
+
+  client_id     = "8rp38Z6yb2cOSTeaMpPIpepAt99eg3ry"
+  client_secret = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndJUnZwVWpBTU93WHQ5ZG5CXzRrVCJ9"
+  url           = "https://api.us1.app.wiz.io/graphql"
+}
+```
+
+Or through environment variables:
+
+```sh
+export WIZ_AUTH_CLIENT_ID=8rp38Z6yb2cOSTeaMpPIpepAt99eg3ry
+export WIZ_AUTH_CLIENT_SECRET=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndJUnZwVWpBTU93WHQ5ZG5CXzRrVCJ9
+export WIZ_URL=https://api.us1.app.wiz.io/graphql
+```
+
+Run steampipe:
+
+```shell
+steampipe query
+```
+
+List all critical issues:
 
 ```sql
 select
@@ -31,6 +59,16 @@ from
   wiz_issue
 where
   severity = 'CRITICAL';
+```
+
+```
++--------------------------------------+----------+----------+---------------------------+
+| id                                   | status   | severity | created_at                |
++--------------------------------------+----------+----------+---------------------------+
+| fff8bfc2-c2f2-42ef-bfbc-2f4321ba85fd | OPEN     | CRITICAL | 2022-10-06T18:37:35+05:30 |
+| fff9b66f-bf5e-1234-b567-8afdded9a0b0 | RESOLVED | CRITICAL | 2022-11-02T21:25:08+05:30 |
+| fff1a2f3-4b56-78ac-bf90-12a34da5f67d | OPEN     | CRITICAL | 2022-09-28T23:40:49+05:30 |
++--------------------------------------+----------+----------+---------------------------+
 ```
 
 ## Developing
