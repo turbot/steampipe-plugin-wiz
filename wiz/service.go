@@ -43,28 +43,17 @@ func clientUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 		return nil, fmt.Errorf("url must be configured")
 	}
 
-	/* Credential precedence
-	 * api_token set in config; if empty,
-	 * client_id and client_secret set in config
-	 */
-	var token string
-	if wizConfig.ApiToken != nil {
-		token = *wizConfig.ApiToken
-	}
-
 	// Return if no credential specified
-	if token == "" && (clientId == "" || clientSecret == "") {
-		return nil, fmt.Errorf("either api_token, or client_id, client_secret must be configured")
+	if clientId == "" || clientSecret == "" {
+		return nil, fmt.Errorf("client_id and client_secret must be configured")
 	}
 
 	// Using client_id and client_secret credentials
-	if token == "" {
-		accessTokenResponse, err := GetAPIToken(ctx, d)
-		if err != nil {
-			return nil, err
-		}
-		token = accessTokenResponse.Token
+	accessTokenResponse, err := GetAPIToken(ctx, d)
+	if err != nil {
+		return nil, err
 	}
+	token := accessTokenResponse.Token
 
 	// Start with an empty Wiz config
 	config := api.ClientConfig{
@@ -122,7 +111,7 @@ func apiTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrat
 	r.Header.Add("Encoding", "UTF-8")
 	r.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 
-	plugin.Logger(ctx).Debug("GetAPIToken", "Getting token...")
+	plugin.Logger(ctx).Debug("GetAPIToken", "Getting access token...")
 
 	// Make a request to get the token
 	resp, err := client.Do(r)
@@ -141,7 +130,7 @@ func apiTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrat
 	at := accessToken{}
 	jsonErr := json.Unmarshal(bodyBytes, &at)
 	if jsonErr != nil {
-		plugin.Logger(ctx).Error("Failed to parse token response", jsonErr)
+		plugin.Logger(ctx).Error("failed to parse token response", jsonErr)
 		return nil, fmt.Errorf("failed to parse token response: %v", jsonErr)
 	}
 
