@@ -2,9 +2,9 @@
 
 The `wiz_cloud_configuration_finding` table can be used to query information about all the findings.
 
-A finding is generated when a configuration check, cloud configuration rule is applies to a specific cloud resource type.
+A finding is generated when a configuration check, cloud configuration rule is applied to a specific cloud resource type.
 
-**Note**: The table can return a large dataset based on the number of rules and the number of cloud accounts where the rule is applied; which can increase the query execution time. It is recommended that queries to this table should include (usually in the `where` clause) at least one of these columns:
+**Note**: The table can return a large dataset based on the number of rules and the number of cloud accounts where the rule is applied; which can increase the query execution time. It is recommended that queries to this table should include (usually in the `where` clause) at least one of the following columns:
 
 - `analyzed_at`
 - `result`

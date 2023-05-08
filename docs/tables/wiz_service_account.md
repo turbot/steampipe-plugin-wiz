@@ -51,7 +51,7 @@ where
   name = 'Steampipe';
 ```
 
-### List service accounts not rotated in last 90 days
+### List service accounts that have not been rotated in the last 90 days
 
 ```sql
 select

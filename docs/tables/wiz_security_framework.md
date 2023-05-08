@@ -19,7 +19,7 @@ from
   wiz_security_framework;
 ```
 
-### List disabled security frameworks
+### List disabled security frameworks  
 
 ```sql
 select
