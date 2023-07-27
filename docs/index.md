@@ -99,4 +99,4 @@ export WIZ_URL=https://api.us1.app.wiz.io/graphql
 ## Get involved
 
 - Open source: https://github.com/turbot/steampipe-plugin-wiz
-- Community: [Slack Channel](https://steampipe.io/community/join)
+- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
