@@ -1,12 +1,20 @@
-# Table: wiz_cloud_config_rule
+---
+title: "Steampipe Table: wiz_cloud_config_rule - Query Wiz Cloud Config Rules using SQL"
+description: "Allows users to query Wiz Cloud Config Rules, specifically the rules associated with cloud resources, providing insights into compliance and configuration patterns."
+---
 
-The `wiz_cloud_config_rule` table can be used to query information about all the cloud configuration rules.
+# Table: wiz_cloud_config_rule - Query Wiz Cloud Config Rules using SQL
 
-A **Cloud Configuration Rule** is a configuration check that applies to a specific cloud resource type - if a resource does not pass a **Rule**, a **Configuration Finding** is generated and associated with the resource on the **Security Graph**.
+Wiz Cloud Config Rules is a resource within Wiz that allows you to monitor and manage the configuration rules associated with your cloud resources. It provides a centralized way to set up and manage rules for various cloud resources, including virtual machines, databases, web applications, and more. Wiz Cloud Config Rules helps you ensure compliance and maintain desired configurations for your cloud resources.
+
+## Table Usage Guide
+
+The `wiz_cloud_config_rule` table provides insights into configuration rules within Wiz Cloud Config Rules. As a cloud engineer, explore rule-specific details through this table, including rule identifiers, descriptions, compliance types, and associated metadata. Utilize it to uncover information about rules, such as those related to specific resources, the compliance status of resources, and the verification of rule compliance.
 
 ## Examples
 
 ### Basic info
+Gain insights into the status and severity of your cloud configuration rules across different providers. This can help you assess the robustness of your cloud security and compliance measures.
 
 ```sql
 select
@@ -21,6 +29,7 @@ from
 ```
 
 ### List disabled rules
+Uncover the details of inactive rules within your cloud configuration. This query is useful for identifying which rules have been disabled, allowing you to assess potential vulnerabilities and ensure optimal security settings.
 
 ```sql
 select
@@ -36,6 +45,7 @@ where
 ```
 
 ### List built-in rules
+Explore which built-in rules are currently enabled, their severity level, and the specific cloud provider they apply to. This can help in understanding the existing security and compliance measures in place, and when they were created.
 
 ```sql
 select
@@ -52,6 +62,7 @@ where
 ```
 
 ### List high-severity rules specific to AWS S3 bucket
+Identify instances where high-severity rules are applied to your AWS S3 buckets. This can help prioritize security measures and ensure the most critical areas of your cloud storage are adequately protected.
 
 ```sql
 select
@@ -70,6 +81,7 @@ where
 ```
 
 ### List all findings of a rule specific to AWS S3 bucket in the last 3 days
+Determine the areas in which high-severity AWS S3 bucket rules have been violated in the past three days. This can provide insight into potential security risks and areas for improvement in your cloud configuration.
 
 ```sql
 with list_s3_bucket_rules as (
@@ -97,6 +109,7 @@ from
 ```
 
 ### List rules with auto-remediation enabled
+Discover the segments that have auto-remediation enabled, which helps in identifying rules that automatically correct violations, enhancing security and compliance within the cloud environment.
 
 ```sql
 select

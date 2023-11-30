@@ -1,21 +1,20 @@
-# Table: wiz_issue
+---
+title: "Steampipe Table: wiz_issue - Query Wiz Issues using SQL"
+description: "Allows users to query Wiz Issues, providing detailed information about security risks and vulnerabilities identified in their environment."
+---
 
-The `wiz_issue` table can be used to query information about all issues created in Wiz.
+# Table: wiz_issue - Query Wiz Issues using SQL
 
-A **Control** consists of a pre-defined **Security Graph** query and a severity level — if a control's query returns any results, an issue is generated for every result.
+Wiz is a Cloud Security Posture Management (CSPM) tool that provides continuous security posture monitoring for cloud environments. It identifies security risks and vulnerabilities across a wide range of categories, including misconfigurations, policy violations, and threats. Wiz provides a holistic view of your security posture, enabling you to identify and remediate issues quickly and effectively.
 
-**Note**: The table can return a large dataset; which can increase the query execution time. It is recommended that queries to this table should include (usually in the `where` clause) at least one of these columns:
+## Table Usage Guide
 
-- `control_id`
-- `created_at`
-- `framework_category_id`
-- `resolution_reason`
-- `severity`
-- `status`
+The `wiz_issue` table provides insights into the security issues identified by Wiz in your cloud environment. As a security engineer, you can use this table to explore detailed information about each issue, including its severity, status, and associated resources. This can help you prioritize remediation efforts and improve your overall security posture.
 
 ## Examples
 
 ### Basic info
+Explore which issues have been logged in your system, their severity and status, and when they were created. This can help you understand the range and depth of problems encountered, and the reasons provided for their resolution.
 
 ```sql
 select
@@ -29,6 +28,7 @@ from
 ```
 
 ### List critical issues
+Pinpoint the specific instances where critical issues have arisen. This can assist in prioritizing problem-solving efforts and focusing on the most significant challenges first.
 
 ```sql
 select
@@ -43,6 +43,7 @@ where
 ```
 
 ### List high severity open issues
+Discover the segments that contain high severity issues that are still open. This can be particularly useful in prioritizing and addressing critical issues promptly to minimize potential impacts.
 
 ```sql
 select
@@ -58,6 +59,7 @@ where
 ```
 
 ### List data security open issues using framework category ID
+Explore open data security issues, categorized by their severity level, within a specific framework category. This helps in understanding the distribution of issues and prioritizing them for resolution.
 
 ```sql
 select
@@ -73,6 +75,7 @@ group by
 ```
 
 ### List all open issues created in last 30 days
+Explore which issues remain unresolved within the past month. This can help prioritize and manage ongoing tasks effectively.
 
 ```sql
 select
@@ -88,6 +91,7 @@ where
 ```
 
 ### Get the project information that the issue is related to
+Explore which projects are associated with specific issues, including their status and severity, to understand the overall impact and urgency of each issue. This enables efficient project management and issue resolution.
 
 ```sql
 select
@@ -103,6 +107,7 @@ from
 ```
 
 ### List all high-severity issues open for more than a week
+Explore which high-severity issues have remained unresolved for more than a week. This is useful in prioritizing and addressing critical problems that have been open for an extended period.
 
 ```sql
 select

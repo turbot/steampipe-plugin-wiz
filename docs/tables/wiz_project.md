@@ -1,12 +1,20 @@
-# Table: wiz_project
+---
+title: "Steampipe Table: wiz_project - Query Wiz Projects using SQL"
+description: "Allows users to query Wiz Projects, providing detailed information about the projects, such as their name, ID, and creation time."
+---
 
-The `wiz_project` table can be used to query information about the Wiz projects.
+# Table: wiz_project - Query Wiz Projects using SQL
 
-A project helps to group the cloud resources according to their users and/or purposes.
+Wiz is a cloud security platform that identifies the most critical risks and enables quick remediation by using a new scanner-less approach. It scans the entire environment to build a graph-based inventory and then applies cloud-native analysis to prioritize risks. Wiz supports multi-cloud environments and provides a holistic view of risks across Azure, AWS, GCP, and Kubernetes.
+
+## Table Usage Guide
+
+The `wiz_project` table provides insights into Projects within the Wiz platform. As a Security Engineer, explore project-specific details through this table, including ID, name, and creation time. Utilize it to uncover information about projects, such as their unique identifiers and the time they were created, which can aid in managing and securing your cloud environment.
 
 ## Examples
 
 ### Basic info
+Gain insights into your project's structure by understanding the distribution of business units, the number of repositories, cloud accounts, and Kubernetes clusters, along with their respective security scores. This is useful to assess the overall security posture and resource allocation within your project.
 
 ```sql
 select
@@ -21,6 +29,7 @@ from
 ```
 
 ### Get count of critical issues per project
+This query helps identify the number of critical issues per project, providing a clear overview of project health and potential areas of concern. This can be beneficial in prioritizing resources and remediation efforts.
 
 ```sql
 with critical_issues as (
@@ -45,6 +54,7 @@ group by
 ```
 
 ### Get the owner details of each project
+Explore which projects are owned by which users to better understand project responsibility distribution. This can assist in identifying the point of contact for each project, facilitating smoother communication and project management.
 
 ```sql
 select
@@ -59,6 +69,7 @@ from
 ```
 
 ### List archived projects
+Explore which projects have been archived, allowing you to assess elements like the associated business unit, security score, and linked resources such as repositories, cloud accounts, and Kubernetes clusters. This can be useful in understanding the scope and impact of archived projects within your organization.
 
 ```sql
 select
