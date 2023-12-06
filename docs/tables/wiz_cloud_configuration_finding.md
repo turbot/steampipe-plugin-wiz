@@ -11,6 +11,14 @@ Wiz Cloud Configuration Findings is a resource within Wiz that provides a compre
 
 The `wiz_cloud_configuration_finding` table provides insights into your cloud environment's security posture. As a Security Analyst, explore specific details through this table, including misconfigurations, compliance status, and potential vulnerabilities. Utilize it to uncover information about security issues, such as those related to misconfigurations, the compliance status of resources, and the identification of potential vulnerabilities.
 
+**Important Notes**
+- The table can return a large dataset based on the number of rules and the number of cloud accounts where the rule is applied; which can increase the query execution time. It is recommended that queries to this table should include (usually in the `where` clause) at least one of the following columns:
+  - `analyzed_at`
+  - `result`
+  - `rule_id`
+  - `severity`
+  - `status`
+
 ## Examples
 
 ### Basic info

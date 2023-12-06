@@ -11,6 +11,15 @@ Wiz is a Cloud Security Posture Management (CSPM) tool that provides continuous 
 
 The `wiz_issue` table provides insights into the security issues identified by Wiz in your cloud environment. As a security engineer, you can use this table to explore detailed information about each issue, including its severity, status, and associated resources. This can help you prioritize remediation efforts and improve your overall security posture.
 
+**Important Notes**
+- The table can return a large dataset; which can increase the query execution time. It is recommended that queries to this table should include (usually in the `where` clause) at least one of these columns:
+  - `control_id`
+  - `created_at`
+  - `framework_category_id`
+  - `resolution_reason`
+  - `severity`
+  - `status`
+
 ## Examples
 
 ### Basic info
