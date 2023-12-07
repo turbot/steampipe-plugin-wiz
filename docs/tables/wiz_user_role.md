@@ -16,7 +16,18 @@ The `wiz_user_role` table provides insights into user roles within Wiz. As a sec
 ### Basic info
 Explore the roles within your user base, including their scope and descriptions, to gain insights into user permissions and responsibilities. This can help in managing access control and understanding the distribution of roles in your system.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  description,
+  is_project_scoped,
+  scopes
+from
+  wiz_user_role;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -30,7 +41,20 @@ from
 ### List roles scoped to a specific project
 Explore which user roles are specifically scoped to a project. This is useful in assessing the allocation of responsibilities and permissions within a project context.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  description,
+  is_project_scoped,
+  scopes
+from
+  wiz_user_role
+where
+  is_project_scoped;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -46,7 +70,7 @@ where
 ### Count users per role
 Explore which roles have the most users associated with them, allowing for an understanding of user distribution across different roles within the system. This can be beneficial for resource allocation and system management.
 
-```sql
+```sql+postgres
 select
   r.name,
   count(u.id) as user_count
@@ -57,10 +81,21 @@ group by
   r.name;
 ```
 
+```sql+sqlite
+select
+  r.name,
+  count(u.id) as user_count
+from
+  wiz_user_role as r
+  left join wiz_user as u on r.id = json_extract(u.role, '$.id')
+group by
+  r.name;
+```
+
 ### List users assigned with Global Admin role
 Explore which users have been assigned the Global Admin role. This is useful for managing user permissions and ensuring only authorized individuals have access to sensitive data or administrative functions.
 
-```sql
+```sql+postgres
 select
   u.name,
   u.email,
@@ -70,15 +105,37 @@ from
   join wiz_user_role as r on u.role ->> 'id' = r.id and r.id = 'GLOBAL_ADMIN';
 ```
 
+```sql+sqlite
+select
+  u.name,
+  u.email,
+  r.name as role_name
+from
+  wiz_user as u
+  join wiz_user_role as r on json_extract(u.role, '$.id') = r.id and r.id = 'GLOBAL_ADMIN';
+```
+
 ### List admin roles
 Explore which user roles have administrative privileges. This could be useful in auditing user permissions and ensuring appropriate access controls are in place.
 
-```sql
+```sql+postgres
 select
   name,
   id,
   jsonb_pretty(scopes)
   description,
+  is_project_scoped
+from
+  wiz_user_role
+where
+  id like '%_ADMIN';
+```
+
+```sql+sqlite
+select
+  name,
+  id,
+  scopes as description,
   is_project_scoped
 from
   wiz_user_role

@@ -16,7 +16,17 @@ The `wiz_security_category` table provides insights into security risk categorie
 ### Basic info
 Explore the different security categories within the Wiz framework to gain insights into their names, IDs, and descriptions. This could be useful for understanding the various security categories and their respective details, which can aid in improving overall security management.
 
-```sql
+```sql+postgres
+select
+  name,
+  id,
+  framework_id,
+  description
+from
+  wiz_security_category;
+```
+
+```sql+sqlite
 select
   name,
   id,
@@ -29,7 +39,18 @@ from
 ### Get the count of categories per framework
 Discover the segments that have the highest number of categories within each framework. This can help prioritize which frameworks to focus on for security enhancements or audits.
 
-```sql
+```sql+postgres
+select
+  f.name,
+  count(c.id) as category_count
+from
+  wiz_security_category as c
+  join wiz_security_framework as f on f.id = c.framework_id
+group by
+  f.name;
+```
+
+```sql+sqlite
 select
   f.name,
   count(c.id) as category_count
@@ -43,7 +64,20 @@ group by
 ### List all open issues related to data security
 Discover the segments that have open issues related to data security, categorized by severity. This information can help prioritize security efforts based on the severity of the issues.
 
-```sql
+```sql+postgres
+select
+  severity,
+  count(id)
+from
+  wiz_issue
+where
+  status = 'OPEN'
+  and framework_category_id = 'wct-id-422'
+group by
+  severity;
+```
+
+```sql+sqlite
 select
   severity,
   count(id)
@@ -59,7 +93,20 @@ group by
 ### List all open issues related to vulnerability assessment
 Gain insights into the number of open issues for each severity level related to vulnerability assessment. This can be used to prioritize security efforts based on the severity of the open issues.
 
-```sql
+```sql+postgres
+select
+  severity,
+  count(id)
+from
+  wiz_issue
+where
+  status = 'OPEN'
+  and framework_category_id = 'wct-id-3'
+group by
+  severity;
+```
+
+```sql+sqlite
 select
   severity,
   count(id)
@@ -75,7 +122,20 @@ group by
 ### List all open issues related to cloud entitlements
 Explore the severity level of open issues associated with cloud entitlements. This can be useful in prioritizing responses and allocating resources efficiently.
 
-```sql
+```sql+postgres
+select
+  severity,
+  count(id)
+from
+  wiz_issue
+where
+  status = 'OPEN'
+  and framework_category_id = 'wct-id-6'
+group by
+  severity;
+```
+
+```sql+sqlite
 select
   severity,
   count(id)

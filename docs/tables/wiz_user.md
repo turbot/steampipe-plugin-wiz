@@ -16,7 +16,7 @@ The `wiz_user` table provides insights into user accounts within the Wiz platfor
 ### Basic info
 Gain insights into user details such as their role and status (active or suspended), as well as their last login and account creation dates. This can be useful for understanding user behavior and managing user access.
 
-```sql
+```sql+postgres
 select
   name,
   email,
@@ -29,10 +29,23 @@ from
   wiz_user;
 ```
 
+```sql+sqlite
+select
+  name,
+  email,
+  identity_provider_type,
+  json_extract(role, '$.name') as role,
+  is_suspended,
+  last_login_at,
+  created_at
+from
+  wiz_user;
+```
+
 ### List suspended users
 Discover the segments that consist of suspended users to assess potential security risks or to manage user access, ensuring a safer and more controlled environment.
 
-```sql
+```sql+postgres
 select
   name,
   email,
@@ -46,10 +59,24 @@ where
   is_suspended;
 ```
 
+```sql+sqlite
+select
+  name,
+  email,
+  identity_provider_type,
+  json_extract(role, '$.name') as role,
+  last_login_at,
+  created_at
+from
+  wiz_user
+where
+  is_suspended;
+```
+
 ### List inactive users
 Discover the segments that include users who have not logged in yet. This can be useful in identifying inactive users for potential outreach or account clean-up efforts.
 
-```sql
+```sql+postgres
 select
   name,
   email,
@@ -63,10 +90,24 @@ where
   last_login_at is null;
 ```
 
+```sql+sqlite
+select
+  name,
+  email,
+  identity_provider_type,
+  json_extract(role, '$.name') as role,
+  is_suspended,
+  created_at
+from
+  wiz_user
+where
+  last_login_at is null;
+```
+
 ### List all administrators
 Discover the segments that have global administrators and their corresponding details, without including project-scoped roles. This helps in identifying and managing users with overarching control and access within your system.
 
-```sql
+```sql+postgres
 select
   name,
   email,
@@ -80,10 +121,24 @@ where
   and not (role ->> 'isProjectScoped')::boolean;
 ```
 
+```sql+sqlite
+select
+  name,
+  email,
+  identity_provider_type,
+  json_extract(role, '$.name') as role,
+  created_at
+from
+  wiz_user
+where
+  json_extract(role, '$.id') = 'GLOBAL_ADMIN'
+  and not json_extract(role, '$.isProjectScoped');
+```
+
 ### List users scoped to a specific project
 Explore which users are assigned to a specific project. This can help in understanding the distribution of team members across projects, facilitating efficient resource management and task allocation.
 
-```sql
+```sql+postgres
 select
   u.name,
   u.email,
@@ -97,15 +152,44 @@ from
   join wiz_project as p on ep ->> 'id' = p.id;
 ```
 
+```sql+sqlite
+select
+  u.name,
+  u.email,
+  u.identity_provider_type,
+  json_extract(u.role, '$.name') as role,
+  p.name as project,
+  u.created_at
+from
+  wiz_user as u,
+  json_each(u.effective_assigned_projects) as ep
+  join wiz_project as p on json_extract(ep.value, '$.id') = p.id;
+```
+
 ### List all SAML users
 Discover the segments that are using SAML as their identity provider. This can be particularly useful to understand user distribution across different identity providers and assess if any particular group needs attention.
 
-```sql
+```sql+postgres
 select
   name,
   email,
   identity_provider_type,
   role ->> 'name' as role,
+  is_suspended,
+  last_login_at,
+  created_at
+from
+  wiz_user
+where
+  identity_provider_type = 'SAML';
+```
+
+```sql+sqlite
+select
+  name,
+  email,
+  identity_provider_type,
+  json_extract(role, '$.name') as role,
   is_suspended,
   last_login_at,
   created_at

@@ -16,7 +16,19 @@ The `wiz_project` table provides insights into Projects within the Wiz platform.
 ### Basic info
 Gain insights into your project's structure by understanding the distribution of business units, the number of repositories, cloud accounts, and Kubernetes clusters, along with their respective security scores. This is useful to assess the overall security posture and resource allocation within your project.
 
-```sql
+```sql+postgres
+select
+  name,
+  business_unit,
+  security_score as security_score_in_percentage,
+  repository_count,
+  cloud_account_count,
+  kubernetes_cluster_count
+from
+  wiz_project;
+```
+
+```sql+sqlite
 select
   name,
   business_unit,
@@ -31,7 +43,7 @@ from
 ### Get count of critical issues per project
 This query helps identify the number of critical issues per project, providing a clear overview of project health and potential areas of concern. This can be beneficial in prioritizing resources and remediation efforts.
 
-```sql
+```sql+postgres
 with critical_issues as (
   select
     id,
@@ -53,10 +65,32 @@ group by
   p.name;
 ```
 
+```sql+sqlite
+with critical_issues as (
+  select
+    id,
+    severity,
+    json_extract(p.value, '$.id') as project
+  from
+    wiz_issue,
+    json_each(projects) as p
+  where
+    severity = 'CRITICAL'
+)
+select
+  p.name as project,
+  count(c.id)
+from
+  wiz_project as p
+  left join critical_issues as c on p.id = c.project
+group by
+  p.name;
+```
+
 ### Get the owner details of each project
 Explore which projects are owned by which users to better understand project responsibility distribution. This can assist in identifying the point of contact for each project, facilitating smoother communication and project management.
 
-```sql
+```sql+postgres
 select
   p.name,
   p.slug,
@@ -68,10 +102,22 @@ from
   left join wiz_user as u on u.id = o ->> 'id';
 ```
 
+```sql+sqlite
+select
+  p.name,
+  p.slug,
+  u.name as user_name,
+  u.email as user_email
+from
+  wiz_project as p,
+  json_each(p.project_owners) as o
+  left join wiz_user as u on u.id = json_extract(o.value, '$.id');
+```
+
 ### List archived projects
 Explore which projects have been archived, allowing you to assess elements like the associated business unit, security score, and linked resources such as repositories, cloud accounts, and Kubernetes clusters. This can be useful in understanding the scope and impact of archived projects within your organization.
 
-```sql
+```sql+postgres
 select
   name,
   business_unit,
@@ -83,4 +129,18 @@ from
   wiz_project
 where
   archived;
+```
+
+```sql+sqlite
+select
+  name,
+  business_unit,
+  security_score as security_score_in_percentage,
+  repository_count,
+  cloud_account_count,
+  kubernetes_cluster_count
+from
+  wiz_project
+where
+  archived = 1;
 ```

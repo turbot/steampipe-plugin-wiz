@@ -24,7 +24,18 @@ The `wiz_cloud_configuration_finding` table provides insights into your cloud en
 ### Basic info
 Explore the findings of your cloud configuration analysis. This can help you assess the severity and status of any potential issues, allowing for timely and effective resolution.
 
-```sql
+```sql+postgres
+select
+  title,
+  result,
+  severity,
+  analyzed_at,
+  status
+from
+  wiz_cloud_configuration_finding;
+```
+
+```sql+sqlite
 select
   title,
   result,
@@ -38,7 +49,21 @@ from
 ### List all failed resources with high severity
 Gain insights into high-risk areas by identifying system resources with a high severity failure status. This can aid in prioritizing and addressing critical issues promptly for optimized system performance and security.
 
-```sql
+```sql+postgres
+select
+  title,
+  result,
+  severity,
+  analyzed_at,
+  status
+from
+  wiz_cloud_configuration_finding
+where
+  result = 'FAIL'
+  and severity = 'HIGH';
+```
+
+```sql+sqlite
 select
   title,
   result,
@@ -55,7 +80,22 @@ where
 ### List failed resources which are not resolved
 Identify unresolved, high-severity issues within your cloud configuration to prioritize and address potential vulnerabilities or misconfigurations.
 
-```sql
+```sql+postgres
+select
+  title,
+  result,
+  severity,
+  analyzed_at,
+  status
+from
+  wiz_cloud_configuration_finding
+where
+  result = 'FAIL'
+  and status = 'OPEN'
+  and severity = 'HIGH';
+```
+
+```sql+sqlite
 select
   title,
   result,
@@ -73,7 +113,7 @@ where
 ### List all findings detected in the last 3 days
 Discover the segments that have been flagged with high severity issues in the last three days. This query helps in identifying unresolved, high-risk problems for prioritized troubleshooting.
 
-```sql
+```sql+postgres
 select
   title,
   result,
@@ -89,10 +129,26 @@ where
   and analyzed_at > (current_timestamp - interval '3 day');
 ```
 
+```sql+sqlite
+select
+  title,
+  result,
+  severity,
+  analyzed_at,
+  status
+from
+  wiz_cloud_configuration_finding
+where
+  result = 'FAIL'
+  and status = 'OPEN'
+  and severity = 'HIGH'
+  and analyzed_at > datetime('now', '-3 day');
+```
+
 ### List failed resources with rule information
 Identify instances where high severity resources have failed, including when the failure occurred and its current status. This information can help prioritize remediation efforts for resources that are not meeting compliance rules.
 
-```sql
+```sql+postgres
 select
   title,
   result,
@@ -103,6 +159,22 @@ from
   wiz_cloud_configuration_finding as f
   left join wiz_cloud_config_rule as r on
     f.rule ->> 'id' = r.id
+    and f.result = 'FAIL'
+    and f.status = 'OPEN'
+    and f.severity = 'HIGH';
+```
+
+```sql+sqlite
+select
+  title,
+  result,
+  severity,
+  analyzed_at,
+  status
+from
+  wiz_cloud_configuration_finding as f
+  left join wiz_cloud_config_rule as r on
+    json_extract(f.rule, '$.id') = r.id
     and f.result = 'FAIL'
     and f.status = 'OPEN'
     and f.severity = 'HIGH';

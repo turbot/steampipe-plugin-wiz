@@ -16,7 +16,17 @@ The `wiz_subscription` table provides insights into subscriptions within Wiz. As
 ### Basic info
 Explore the status and last scanned timestamp of your cloud subscriptions across different providers. This can help you monitor and manage the health and security of your cloud infrastructure.
 
-```sql
+```sql+postgres
+select
+  name,
+  cloud_provider,
+  status,
+  last_scanned_at
+from
+  wiz_subscription;
+```
+
+```sql+sqlite
 select
   name,
   cloud_provider,
@@ -29,7 +39,19 @@ from
 ### List all connected AWS cloud accounts
 Discover the segments that are currently connected to your AWS cloud accounts. This is particularly useful for understanding which accounts are active and when they were last scanned, aiding in maintaining efficient account management and security.
 
-```sql
+```sql+postgres
+select
+  name,
+  cloud_provider,
+  status,
+  last_scanned_at
+from
+  wiz_subscription
+where
+  cloud_provider = 'AWS';
+```
+
+```sql+sqlite
 select
   name,
   cloud_provider,
@@ -44,7 +66,19 @@ where
 ### List partially connected cloud accounts
 Uncover the details of cloud accounts that are only partially connected. This is useful to identify potential issues with your cloud accounts, such as incomplete setup or connection problems, which may impact your ability to fully utilize cloud services.
 
-```sql
+```sql+postgres
+select
+  name,
+  cloud_provider,
+  status,
+  last_scanned_at
+from
+  wiz_subscription
+where
+  status = 'PARTIALLY_CONNECTED';
+```
+
+```sql+sqlite
 select
   name,
   cloud_provider,
@@ -59,7 +93,7 @@ where
 ### List cloud accounts not checked in last 24 hours
 Discover the cloud accounts that have not been scanned in the last 24 hours. This query is useful in identifying potential security risks by pinpointing accounts that may have been overlooked during routine checks.
 
-```sql
+```sql+postgres
 select
   name,
   cloud_provider,
@@ -71,10 +105,34 @@ where
   last_scanned_at < (current_timestamp - interval '1 day');
 ```
 
+```sql+sqlite
+select
+  name,
+  cloud_provider,
+  status,
+  last_scanned_at
+from
+  wiz_subscription
+where
+  last_scanned_at < datetime('now','-1 day');
+```
+
 ### List cloud accounts not linked to any project
 Discover the segments that are associated with cloud accounts not linked to any project. This can be particularly useful for organizations looking to streamline their cloud resources or identify unused accounts.
 
-```sql
+```sql+postgres
+select
+  name,
+  cloud_provider,
+  status,
+  last_scanned_at
+from
+  wiz_subscription
+where
+  linked_projects is null;
+```
+
+```sql+sqlite
 select
   name,
   cloud_provider,
