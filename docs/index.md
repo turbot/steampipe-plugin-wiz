@@ -97,7 +97,4 @@ export WIZ_AUTH_CLIENT_SECRET=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndJUn
 export WIZ_URL=https://api.us1.app.wiz.io/graphql
 ```
 
-## Get involved
 
-- Open source: https://github.com/turbot/steampipe-plugin-wiz
-- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
