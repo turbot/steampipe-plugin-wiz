@@ -8,6 +8,7 @@ short_name: "wiz"
 description: "Steampipe plugin to query security controls, findings, vulnerabilities, and more from your Wiz subscription."
 og_description: "Query Wiz with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/wiz-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # Wiz + Steampipe
