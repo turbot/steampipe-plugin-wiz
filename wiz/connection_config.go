@@ -2,25 +2,12 @@ package wiz
 
 import (
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/schema"
 )
 
 type wizConfig struct {
-	ClientId     *string `cty:"client_id"`
-	ClientSecret *string `cty:"client_secret"`
-	Url          *string `cty:"url"`
-}
-
-var ConfigSchema = map[string]*schema.Attribute{
-	"client_id": {
-		Type: schema.TypeString,
-	},
-	"client_secret": {
-		Type: schema.TypeString,
-	},
-	"url": {
-		Type: schema.TypeString,
-	},
+	ClientId     *string `hcl:"client_id"`
+	ClientSecret *string `hcl:"client_secret"`
+	Url          *string `hcl:"url"`
 }
 
 func ConfigInstance() interface{} {
