@@ -8,13 +8,14 @@ short_name: "wiz"
 description: "Steampipe plugin to query security controls, findings, vulnerabilities, and more from your Wiz subscription."
 og_description: "Query Wiz with SQL! Open source CLI. No DB required."
 og_image: "/images/plugins/turbot/wiz-social-graphic.png"
+engines: ["steampipe", "sqlite", "postgres", "export"]
 ---
 
 # Wiz + Steampipe
 
 [Wiz](https://www.wiz.io) provides direct visibility, risk prioritization, and remediation guidance for development teams to address risks in their own infrastructure and applications so they can ship faster and more securely.
 
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
+[Steampipe](https://steampipe.io) is an open-source zero-ETL engine to instantly query cloud APIs using SQL.
 
 List all critical issues:
 
@@ -96,7 +97,4 @@ export WIZ_AUTH_CLIENT_SECRET=eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IndJUn
 export WIZ_URL=https://api.us1.app.wiz.io/graphql
 ```
 
-## Get involved
 
-- Open source: https://github.com/turbot/steampipe-plugin-wiz
-- Community: [Join #steampipe on Slack →](https://turbot.com/community/join)
