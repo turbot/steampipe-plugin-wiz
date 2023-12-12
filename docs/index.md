@@ -15,7 +15,7 @@ engines: ["steampipe", "sqlite", "postgres", "export"]
 
 [Wiz](https://www.wiz.io) provides direct visibility, risk prioritization, and remediation guidance for development teams to address risks in their own infrastructure and applications so they can ship faster and more securely.
 
-[Steampipe](https://steampipe.io) is an open source CLI to instantly query cloud APIs using SQL.
+[Steampipe](https://steampipe.io) is an open-source zero-ETL engine to instantly query cloud APIs using SQL.
 
 List all critical issues:
 
