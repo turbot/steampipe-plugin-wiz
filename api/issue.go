@@ -53,9 +53,6 @@ query ListIssues($first: Int, $after: String, $filter: IssueFilters) {
         name
         url
         externalId
-        action {
-          id
-        }
         integration {
           id
         }
