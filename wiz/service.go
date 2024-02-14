@@ -115,8 +115,13 @@ func accessTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 
 	// Make a request to get the token
 	resp, err := client.Do(r)
+
 	if err != nil {
 		return nil, fmt.Errorf("error getting token response. Status: %s, err: %v", resp.Status, err)
+	}
+
+	if resp.Status != "200 OK" {
+		return nil, fmt.Errorf("failed to generate access token, please verify your connection config. Status: %s", resp.Status)
 	}
 
 	// Read the response body
