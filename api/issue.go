@@ -111,9 +111,6 @@ query GetIssue($id: ID!) {
       name
       url
       externalId
-      action {
-        id
-      }
       integration {
         id
       }
