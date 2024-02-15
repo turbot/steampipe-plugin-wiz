@@ -1,3 +1,13 @@
+## v0.3.0 [2024-02-15]
+
+_Enhancements_
+
+- Improve the plugin error message when invalid credentials are set in the wiz.spc file. ([#23](https://github.com/turbot/steampipe-plugin-wiz/pull/23))
+
+_Bug fixes_
+
+- Fix the `service_tickets` column in `wiz_issue` table by removing the action sub field in the GraphQL response. ([#24](https://github.com/turbot/steampipe-plugin-wiz/pull/24) [#25](https://github.com/turbot/steampipe-plugin-wiz/pull/25)) (Thanks [@sycophantic](https://github.com/sycophantic) for the contribution!)
+
 ## v0.2.0 [2023-12-12]
 
 _What's new?_
