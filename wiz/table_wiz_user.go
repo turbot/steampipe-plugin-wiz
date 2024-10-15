@@ -54,7 +54,7 @@ func listWizUsers(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 
 	options := &api.ListUsersRequestConfiguration{}
 
-	// Default set to 600.
+	// Default set to 60.
 	// This is the maximum number of items can be requested
 	pageLimit := 60
 
