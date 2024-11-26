@@ -27,7 +27,6 @@ query ListProjects($first: Int, $after: String) {
       riskProfile {
         businessImpact
       }
-      profileCompletion
       repositoryCount
       cloudAccountCount
       cloudOrganizationCount
@@ -64,7 +63,6 @@ query GetProject($id: ID!) {
     riskProfile {
       businessImpact
     }
-    profileCompletion
     repositoryCount
     cloudAccountCount
     cloudOrganizationCount
@@ -123,7 +121,6 @@ type Project struct {
 	Identifiers            []string                  `json:"identifiers"`
 	KubernetesClusterCount int                       `json:"kubernetesClusterCount"`
 	Name                   string                    `json:"name"`
-	ProfileCompletion      int                       `json:"profileCompletion"`
 	ProjectOwners          []ProjectOwner            `json:"projectOwners"`
 	RepositoryCount        int                       `json:"repositoryCount"`
 	ResourceTagLinks       []ProjectResourceTagLinks `json:"resourceTagLinks"`
