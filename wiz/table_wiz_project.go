@@ -33,7 +33,6 @@ func tableWizProject(ctx context.Context) *plugin.Table {
 			{Name: "cloud_organization_count", Type: proto.ColumnType_INT, Description: "The count of cloud organizations associated with the project."},
 			{Name: "entity_count", Type: proto.ColumnType_INT, Description: "The count of the entity."},
 			{Name: "kubernetes_cluster_count", Type: proto.ColumnType_INT, Description: "The count of Kubernetes cluster created within the project."},
-			{Name: "profile_completion", Type: proto.ColumnType_INT, Description: "The profile completion percentage of the project."},
 			{Name: "repository_count", Type: proto.ColumnType_INT, Description: "The count of the repository."},
 			{Name: "team_member_count", Type: proto.ColumnType_INT, Description: "The count of the project team member."},
 			{Name: "technology_count", Type: proto.ColumnType_INT, Description: "The count of the technology."},
