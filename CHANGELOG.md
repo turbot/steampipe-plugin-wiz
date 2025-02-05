@@ -1,3 +1,10 @@
+## v1.0.1 [2025-02-05]
+
+_Bug fixes_
+
+- Fixed pagination in `wiz_user` table. ([#41](https://github.com/turbot/steampipe-plugin-wiz/pull/41))
+- Removed the unsupported `profile_completion` column from the `wiz_project` table. ([#47](https://github.com/turbot/steampipe-plugin-wiz/pull/47))
+
 ## v1.0.0 [2024-10-22]
 
 There are no significant changes in this plugin version; it has been released to align with [Steampipe's v1.0.0](https://steampipe.io/changelog/steampipe-cli-v1-0-0) release. This plugin adheres to [semantic versioning](https://semver.org/#semantic-versioning-specification-semver), ensuring backward compatibility within each major version.
