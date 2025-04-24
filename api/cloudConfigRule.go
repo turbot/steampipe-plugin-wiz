@@ -2,6 +2,8 @@ package api
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
 
 	"github.com/machinebox/graphql"
 )
@@ -83,7 +85,7 @@ query GetCloudConfigRule($id: ID!) {
 type CloudConfigRule struct {
 	BuiltIn                 bool                               `json:"builtin"`
 	CloudProvider           string                             `json:"cloudProvider"`
-	Control                 []CloudConfigRuleQueryControl      `json:"control"`
+	Control                 CloudConfigRuleControlWrapper      `json:"control"`
 	CreatedAt               string                             `json:"createdAt"`
 	CreatedBy               CloudConfigRuleQueryUser           `json:"createdBy"`
 	Description             string                             `json:"description"`
@@ -100,6 +102,30 @@ type CloudConfigRule struct {
 	SupportsNrt             bool                               `json:"supportsNRT"`
 	TargetNativeTypes       []string                           `json:"targetNativeTypes"`
 	UpdatedAt               string                             `json:"updatedAt"`
+}
+
+// Custom type to handle both object and array for the Control field
+// Implements json.Unmarshaler
+
+type CloudConfigRuleControlWrapper []CloudConfigRuleQueryControl
+
+func (c *CloudConfigRuleControlWrapper) UnmarshalJSON(data []byte) error {
+	// Try unmarshaling as an array first
+	var array []CloudConfigRuleQueryControl
+	if err := json.Unmarshal(data, &array); err == nil {
+		*c = array
+		return nil
+	}
+
+	// If unmarshaling as an array fails, try unmarshaling as a single object
+	var single CloudConfigRuleQueryControl
+	if err := json.Unmarshal(data, &single); err == nil {
+		*c = []CloudConfigRuleQueryControl{single}
+		return nil
+	}
+
+	// Return an error if neither works
+	return fmt.Errorf("invalid format for Control field")
 }
 
 // Control information
