@@ -7,7 +7,7 @@ toolchain go1.23.2
 require (
 	github.com/machinebox/graphql v0.2.2
 	github.com/turbot/go-kit v1.1.0
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.11.7
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.12.0
 )
 
 require (
