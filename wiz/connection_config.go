@@ -1,7 +1,7 @@
 package wiz
 
 import (
-	"fmt"
+	"errors"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"os"
 	"strings"
@@ -33,7 +33,7 @@ func (wc wizConfig) validate() error {
 	}
 
 	if len(errorStrings) > 0 {
-		return fmt.Errorf(strings.Join(errorStrings, "\n"))
+		return errors.New(strings.Join(errorStrings, "\n"))
 	}
 
 	return nil
