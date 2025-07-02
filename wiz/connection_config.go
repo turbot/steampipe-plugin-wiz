@@ -60,7 +60,7 @@ func GetConfig(connection *plugin.Connection) wizConfig {
 	if config.Url == nil {
 		config.Url = ptr(os.Getenv("WIZ_URL"))
 	}
-	if config.AuthUrl != nil {
+	if config.AuthUrl == nil {
 		config.AuthUrl = ptr(os.Getenv("WIZ_AUTH_URL"))
 	}
 
