@@ -83,7 +83,7 @@ query GetCloudConfigRule($id: ID!) {
 type CloudConfigRule struct {
 	BuiltIn                 bool                               `json:"builtin"`
 	CloudProvider           string                             `json:"cloudProvider"`
-	Control                 []CloudConfigRuleQueryControl      `json:"control"`
+	Control                 *CloudConfigRuleQueryControl       `json:"control"`
 	CreatedAt               string                             `json:"createdAt"`
 	CreatedBy               CloudConfigRuleQueryUser           `json:"createdBy"`
 	Description             string                             `json:"description"`
