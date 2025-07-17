@@ -1,3 +1,13 @@
+## v1.2.0 [2025-07-17]
+
+_Bug fixes_
+
+- Fixed the `control` column of `wiz_cloud_config_rule` table to correctly return data instead of an error. ([#61](https://github.com/turbot/steampipe-plugin-wiz/pull/61))
+
+_Dependencies_
+
+- Recompiled plugin with [steampipe-plugin-sdk v5.11.7](https://github.com/turbot/steampipe-plugin-sdk/blob/develop/CHANGELOG.md#v5117-2025-06-04) which resolves an issue where rate limiters were not being applied to hydrate functions correctly. ([#58](https://github.com/turbot/steampipe-plugin-wiz/pull/58))
+
 ## v1.1.1 [2025-04-18]
 
 _Bug fixes_
