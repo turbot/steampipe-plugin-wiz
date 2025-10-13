@@ -1,3 +1,10 @@
+## v1.3.0 [2025-10-13]
+
+_Dependencies_
+
+- Recompiled plugin with Go version `1.24`. ([#64](https://github.com/turbot/steampipe-plugin-wiz/pull/64))
+- Recompiled plugin with [steampipe-plugin-sdk v5.13.1](https://github.com/turbot/steampipe-plugin-sdk/blob/develop/CHANGELOG.md#v5131-2025-09-25) that addresses critical and high vulnerabilities in dependent packages. ([#68](https://github.com/turbot/steampipe-plugin-wiz/pull/68))
+
 ## v1.2.0 [2025-07-17]
 
 _Bug fixes_
