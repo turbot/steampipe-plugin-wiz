@@ -5,7 +5,7 @@ go 1.26.0
 require (
 	github.com/machinebox/graphql v0.2.2
 	github.com/turbot/go-kit v1.1.0
-	github.com/turbot/steampipe-plugin-sdk/v5 v5.14.0
+	github.com/turbot/steampipe-plugin-sdk/v5 v5.14.1
 )
 
 require (
