@@ -36,7 +36,7 @@ func tableWizIaCFinding(ctx context.Context) *plugin.Table {
 			{Name: "id", Type: proto.ColumnType_STRING, Description: "A unique identifier of the IaC finding."},
 			{Name: "name", Type: proto.ColumnType_STRING, Description: "The name of the IaC finding."},
 			{Name: "severity", Type: proto.ColumnType_STRING, Description: "The severity of the finding. Possible values are: CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL."},
-			{Name: "status", Type: proto.ColumnType_STRING, Description: "The status of the finding. Possible values are: OPEN, IN_PROGRESS, RESOLVED, REJECTED. All statuses are returned unless filtered."},
+			{Name: "status", Type: proto.ColumnType_STRING, Description: "The status of the finding. Possible values are: OPEN, RESOLVED, REJECTED. All statuses are returned unless filtered. The API treats IN_PROGRESS as OPEN for findings, so it is never returned."},
 			{Name: "first_seen_at", Type: proto.ColumnType_TIMESTAMP, Description: "The first time the finding was seen."},
 			{Name: "last_seen_at", Type: proto.ColumnType_TIMESTAMP, Description: "The last time the finding was seen."},
 			{Name: "updated_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time the finding was last updated."},
@@ -69,6 +69,12 @@ func tableWizIaCFinding(ctx context.Context) *plugin.Table {
 //// LIST FUNCTION
 
 func listWizIaCFindings(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+	// The findings APIs treat IN_PROGRESS as OPEN, so a filter on IN_PROGRESS alone matches nothing
+	status, onlyInProgress := findingStatusQual(d)
+	if onlyInProgress {
+		return nil, nil
+	}
+
 	// Create client
 	conn, err := getClient(ctx, d)
 	if err != nil {
@@ -96,7 +102,7 @@ func listWizIaCFindings(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydr
 	options.RepositoryId = stringListQual(d, "repository_id")
 	options.RuleId = stringListQual(d, "rule_id")
 	options.Severity = stringListQual(d, "severity")
-	options.Status = stringListQual(d, "status")
+	options.Status = status
 	options.UpdatedAt = timeRangeQual(d, "updated_at")
 
 	for {

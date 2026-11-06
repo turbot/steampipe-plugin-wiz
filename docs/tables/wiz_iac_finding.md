@@ -12,7 +12,7 @@ Wiz scans Infrastructure as Code (IaC) files in code repositories, such as Terra
 The `wiz_iac_finding` table provides insights into misconfigurations detected in IaC files before they are deployed. As a cloud security engineer, you can use it to track misconfigurations per repository, find the rules broken most often, and follow up on their remediation.
 
 **Important Notes**
-- The table returns findings in all statuses (`OPEN`, `IN_PROGRESS`, `RESOLVED`, `REJECTED`) unless you filter on `status`.
+- The table returns findings in all statuses (`OPEN`, `RESOLVED`, `REJECTED`) unless you filter on `status`. The Wiz API treats `IN_PROGRESS` as `OPEN` for findings, so the table never returns it, and a filter on `IN_PROGRESS` alone returns no rows.
 - The table can return a large dataset; which can increase the query execution time. It is recommended that queries to this table should include (usually in the `where` clause) at least one of these columns:
   - `file_path`
   - `is_default_branch`

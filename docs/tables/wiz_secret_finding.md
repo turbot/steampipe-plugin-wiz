@@ -14,7 +14,7 @@ The `wiz_secret_finding` table provides insights into exposed secrets detected b
 **Important Notes**
 - `service_tickets` and `has_service_ticket` list the service tickets (e.g. Jira) linked to the finding through its related issues (up to 50 related issues per finding) and posture issues. The tickets are only fetched when one of these columns is selected, which makes the query slower and caps the page size at 500; they cannot be used as filters by the API.
 - The table returns finding metadata only. Secret values and code snippets are never selected.
-- The table returns findings in all statuses (`OPEN`, `IN_PROGRESS`, `RESOLVED`, `REJECTED`) unless you filter on `status`. The Wiz API itself only returns open findings when no status is given.
+- The table returns findings in all statuses (`OPEN`, `RESOLVED`, `REJECTED`) unless you filter on `status`. The Wiz API treats `IN_PROGRESS` as `OPEN` for findings, so the table never returns it, and a filter on `IN_PROGRESS` alone returns no rows. The Wiz API itself only returns open findings when no status is given.
 - The table can return a large dataset; which can increase the query execution time. It is recommended that queries to this table should include (usually in the `where` clause) at least one of these columns:
   - `first_seen_at`
   - `is_default_branch`

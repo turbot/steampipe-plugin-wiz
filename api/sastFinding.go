@@ -331,7 +331,7 @@ func ListSASTFindings(
 	if len(options.Status) > 0 {
 		filter["status"] = map[string][]string{"equals": options.Status}
 	} else {
-		filter["status"] = map[string][]string{"equals": AllFindingStatuses}
+		filter["status"] = map[string][]string{"equals": DefaultFindingStatuses}
 	}
 	if options.UpdatedAt != nil {
 		filter["updatedAt"] = options.UpdatedAt.ToVar()

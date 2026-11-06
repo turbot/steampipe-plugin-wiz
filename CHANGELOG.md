@@ -24,8 +24,8 @@ _Bug fixes_
 
 _Breaking changes_
 
-- The `wiz_vulnerability_finding` table now returns findings in all statuses (`OPEN`, `IN_PROGRESS`, `RESOLVED`, `REJECTED`) when `status` is not filtered. Before, the Wiz API returned only open findings, so counts without a `status` filter now include resolved and rejected findings. The new `wiz_sast_finding`, `wiz_secret_finding` and `wiz_iac_finding` tables behave the same way.
-- `wiz_vulnerability_finding.status` uses the current values `OPEN`, `IN_PROGRESS`, `RESOLVED` and `REJECTED`; the old `UNRESOLVED`, `PASSED` and `IGNORED` values are no longer valid. The `vulnerability_external_id` qual now uses `vulnerabilityExternalIdV2`.
+- The `wiz_vulnerability_finding` table now returns findings in all statuses (`OPEN`, `RESOLVED`, `REJECTED`) when `status` is not filtered. Before, the Wiz API returned only open findings, so counts without a `status` filter now include resolved and rejected findings. The new `wiz_sast_finding`, `wiz_secret_finding` and `wiz_iac_finding` tables behave the same way.
+- Findings statuses are `OPEN`, `RESOLVED` and `REJECTED`. The Wiz API treats `IN_PROGRESS` as `OPEN` for findings, so these tables never return it, and a filter on `IN_PROGRESS` alone returns no rows. `wiz_vulnerability_finding.status` no longer accepts the old values `UNRESOLVED`, `PASSED` and `IGNORED`. The `vulnerability_external_id` qual now uses `vulnerabilityExternalIdV2`.
 - `wiz_user.identity_provider_type` now returns `SSO` instead of `SAML` (the Wiz API renamed the value). Queries filtering on `'SAML'` must use `'SSO'`.
 - Moved queries off other fields Wiz has deprecated:
   - `wiz_issue` now uses `issuesV2` and `sourceRules`. The `control_id` qual filters by source rule; `control_id` returns the matching source rule, or else the first source rule of type control.

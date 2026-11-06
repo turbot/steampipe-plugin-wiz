@@ -44,7 +44,7 @@ func tableWizSASTFinding(ctx context.Context) *plugin.Table {
 			{Name: "original_severity", Type: proto.ColumnType_STRING, Description: "The severity reported by the scanner, before any override."},
 			{Name: "impact", Type: proto.ColumnType_STRING, Description: "The impact of the weakness."},
 			{Name: "likelihood", Type: proto.ColumnType_STRING, Description: "The likelihood of the weakness being exploited."},
-			{Name: "status", Type: proto.ColumnType_STRING, Description: "The status of the finding. Possible values are: OPEN, IN_PROGRESS, RESOLVED, REJECTED. All statuses are returned unless filtered."},
+			{Name: "status", Type: proto.ColumnType_STRING, Description: "The status of the finding. Possible values are: OPEN, RESOLVED, REJECTED. All statuses are returned unless filtered. The API treats IN_PROGRESS as OPEN for findings, so it is never returned."},
 			{Name: "resolution_reason", Type: proto.ColumnType_STRING, Description: "The reason the finding was resolved or rejected."},
 			{Name: "rejection_expired_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time the rejection of the finding expires."},
 			{Name: "origin", Type: proto.ColumnType_STRING, Description: "The source that reported the finding, e.g. WIZ or a third-party scanner."},
@@ -85,6 +85,12 @@ func tableWizSASTFinding(ctx context.Context) *plugin.Table {
 //// LIST FUNCTION
 
 func listWizSASTFindings(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+	// The findings APIs treat IN_PROGRESS as OPEN, so a filter on IN_PROGRESS alone matches nothing
+	status, onlyInProgress := findingStatusQual(d)
+	if onlyInProgress {
+		return nil, nil
+	}
+
 	// Create client
 	conn, err := getClient(ctx, d)
 	if err != nil {
@@ -117,7 +123,7 @@ func listWizSASTFindings(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 	options.IncludeServiceTickets = columnRequested(d, serviceTicketColumns...)
 	options.RuleId = stringListQual(d, "rule_id")
 	options.Severity = stringListQual(d, "severity")
-	options.Status = stringListQual(d, "status")
+	options.Status = status
 	options.UpdatedAt = timeRangeQual(d, "updated_at")
 
 	for {

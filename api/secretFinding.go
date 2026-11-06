@@ -357,7 +357,7 @@ func ListSecretFindings(
 	if len(options.Status) > 0 {
 		filter["status"] = map[string][]string{"equals": options.Status}
 	} else {
-		filter["status"] = map[string][]string{"equals": AllFindingStatuses}
+		filter["status"] = map[string][]string{"equals": DefaultFindingStatuses}
 	}
 	if len(options.Type) > 0 {
 		filter["type"] = map[string][]string{"equals": options.Type}

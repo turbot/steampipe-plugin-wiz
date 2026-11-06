@@ -43,7 +43,7 @@ func tableWizSecretFinding(ctx context.Context) *plugin.Table {
 			{Name: "type", Type: proto.ColumnType_STRING, Description: "The type of the secret, e.g. CLOUD_KEY, PASSWORD, PRIVATE_KEY, SAAS_API_KEY."},
 			{Name: "confidence", Type: proto.ColumnType_STRING, Description: "The confidence of the detection."},
 			{Name: "severity", Type: proto.ColumnType_STRING, Description: "The severity of the finding. Possible values are: CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL."},
-			{Name: "status", Type: proto.ColumnType_STRING, Description: "The status of the finding. Possible values are: OPEN, IN_PROGRESS, RESOLVED, REJECTED. All statuses are returned unless filtered."},
+			{Name: "status", Type: proto.ColumnType_STRING, Description: "The status of the finding. Possible values are: OPEN, RESOLVED, REJECTED. All statuses are returned unless filtered. The API treats IN_PROGRESS as OPEN for findings, so it is never returned."},
 			{Name: "resolution_reason", Type: proto.ColumnType_STRING, Description: "The reason the finding was resolved or rejected."},
 			{Name: "validation_status", Type: proto.ColumnType_STRING, Description: "Whether the secret was validated as live. Possible values are: VALID, INVALID, UNKNOWN."},
 			{Name: "last_validated_at", Type: proto.ColumnType_TIMESTAMP, Description: "The last time the secret was validated."},
@@ -83,6 +83,12 @@ func tableWizSecretFinding(ctx context.Context) *plugin.Table {
 //// LIST FUNCTION
 
 func listWizSecretFindings(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (interface{}, error) {
+	// The findings APIs treat IN_PROGRESS as OPEN, so a filter on IN_PROGRESS alone matches nothing
+	status, onlyInProgress := findingStatusQual(d)
+	if onlyInProgress {
+		return nil, nil
+	}
+
 	// Create client
 	conn, err := getClient(ctx, d)
 	if err != nil {
@@ -114,7 +120,7 @@ func listWizSecretFindings(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 	options.ResourceType = stringListQual(d, "resource_type")
 	options.RuleId = stringListQual(d, "rule_id")
 	options.Severity = stringListQual(d, "severity")
-	options.Status = stringListQual(d, "status")
+	options.Status = status
 	options.Type = stringListQual(d, "type")
 	options.ValidationStatus = stringListQual(d, "validation_status")
 	options.IncludeServiceTickets = columnRequested(d, serviceTicketColumns...)

@@ -58,6 +58,22 @@ func singleStringQual(d *plugin.QueryData, column string) string {
 	return ""
 }
 
+// findingStatusQual returns the status qual values of a findings table without IN_PROGRESS,
+// which the findings APIs treat as OPEN. onlyInProgress is true when the qual asked for
+// IN_PROGRESS alone, so the caller can return no rows without calling the API.
+func findingStatusQual(d *plugin.QueryData) (statuses []string, onlyInProgress bool) {
+	values := stringListQual(d, "status")
+	if len(values) == 0 {
+		return nil, false
+	}
+	for _, v := range values {
+		if v != "IN_PROGRESS" {
+			statuses = append(statuses, v)
+		}
+	}
+	return statuses, len(statuses) == 0
+}
+
 // timeRangeQual converts comparison quals on a timestamp column into an API date filter.
 // "in" quals are not pushed down; Postgres filters those rows itself.
 func timeRangeQual(d *plugin.QueryData, column string) *api.DateFilter {
