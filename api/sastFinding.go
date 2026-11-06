@@ -372,7 +372,7 @@ func ListSASTFindings(
 
 // GetSASTFindingResponse is returned by GetSASTFinding on success
 type GetSASTFindingResponse struct {
-	SASTFinding SASTFinding `json:"sastFinding"`
+	SASTFinding *SASTFinding `json:"sastFinding"`
 }
 
 // GetSASTFinding returns a specific SAST finding that matches the ID

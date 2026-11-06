@@ -22,7 +22,7 @@ The `wiz_issue` table provides insights into the security issues identified by W
   - `severity`
   - `status`
   - `type`
-- `project_id` and `framework_category_id` are filter-only columns, and `control_id` matches one of the issue's source rules. Use them with the `=` operator and a single value. With an `in` list, Steampipe makes one API call per value, so an issue that matches several values is returned once per value.
+- `project_id` and `framework_category_id` are filter-only columns. `project_id` and `control_id` return the filter value that matches one of the issue's projects or source rules, so they work with `=` and `in` lists; with a single `in` list Steampipe makes one API call per value, so an issue that matches several values is returned once per value. `framework_category_id` supports only `=` with a single value; list filters on it are not supported.
 - `application_services`, `related_application_services` and `risk_factors` are only fetched when selected, which makes the query slower.
 
 ## Examples

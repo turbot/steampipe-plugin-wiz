@@ -22,6 +22,7 @@ The `wiz_iac_finding` table provides insights into misconfigurations detected in
   - `status`
   - `updated_at`
 - `is_default_branch` is a filter-only column: it supports only the `=` operator (e.g. `is_default_branch = true`), and is only populated when used that way in the `where` clause.
+- `found_content`, `expected_content` and `match_content` are excerpts of the scanned file, like the `snippet` column of `wiz_sast_finding`.
 
 ## Examples
 

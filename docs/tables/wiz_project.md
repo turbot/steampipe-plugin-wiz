@@ -87,31 +87,29 @@ group by
   p.name;
 ```
 
-### Get the owner details of each project
-Explore which projects are owned by which users to better understand project responsibility distribution. This can assist in identifying the point of contact for each project, facilitating smoother communication and project management.
+### Get the owners of each project
+Explore who owns each project, to identify the point of contact for it. Project owners are identities, not Wiz portal users, so their IDs do not match `wiz_user.id`.
 
 ```sql+postgres
 select
   p.name,
   p.slug,
-  u.name as user_name,
-  u.email as user_email
+  o ->> 'id' as owner_id,
+  o ->> 'name' as owner_name
 from
   wiz_project as p
-  left join jsonb_array_elements(project_owners) as o on true
-  left join wiz_user as u on u.id = o ->> 'id';
+  left join jsonb_array_elements(p.project_owners) as o on true;
 ```
 
 ```sql+sqlite
 select
   p.name,
   p.slug,
-  u.name as user_name,
-  u.email as user_email
+  json_extract(o.value, '$.id') as owner_id,
+  json_extract(o.value, '$.name') as owner_name
 from
-  wiz_project as p,
-  json_each(p.project_owners) as o
-  left join wiz_user as u on u.id = json_extract(o.value, '$.id');
+  wiz_project as p
+  left join json_each(p.project_owners) as o;
 ```
 
 ### List archived projects

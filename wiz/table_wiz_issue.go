@@ -47,7 +47,7 @@ func tableWizIssue(ctx context.Context) *plugin.Table {
 			{Name: "status_changed_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the issue status was last changed."},
 			{Name: "updated_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the issue was last updated."},
 			{Name: "control_id", Type: proto.ColumnType_STRING, Description: "The control ID through which this issue is generated. As a filter, use a single value with the = operator.", Transform: transform.FromField("SourceRules").Transform(issueControlId)},
-			{Name: "framework_category_id", Type: proto.ColumnType_STRING, Description: "Filter-only column: use framework_category_id = '<id>' (a single value) to return the issues of a framework category.", Transform: transform.FromQual("framework_category_id")},
+			{Name: "framework_category_id", Type: proto.ColumnType_STRING, Description: "Filter-only column: use framework_category_id = '<id>' to return the issues of a framework category. List filters (in) on this column are not supported.", Transform: transform.FromValue().TransformP(scalarQualValue, "framework_category_id")},
 			{Name: "entity", Type: proto.ColumnType_JSON, Description: "The graph entity to which this issue is related."},
 			{Name: "notes", Type: proto.ColumnType_JSON, Description: "The issue related notes."},
 			{Name: "projects", Type: proto.ColumnType_JSON, Description: "A list of projects to which the issue is related."},
@@ -64,7 +64,7 @@ func tableWizIssue(ctx context.Context) *plugin.Table {
 			{Name: "has_code_to_cloud_mapping", Type: proto.ColumnType_BOOL, Description: "True, if the issue's resource is mapped to the code that deploys it.", Transform: transform.FromField("HasCodeToCloudMapping")},
 			{Name: "validated_as_exploitable", Type: proto.ColumnType_BOOL, Description: "True, if the issue was validated as exploitable.", Transform: transform.FromField("ValidatedAsExploitable")},
 			{Name: "environments", Type: proto.ColumnType_JSON, Description: "The environments of the issue's resource, e.g. PRODUCTION, STAGING."},
-			{Name: "project_id", Type: proto.ColumnType_STRING, Description: "Filter-only column: use project_id = '<id>' (a single value) to return the issues of a project.", Transform: transform.FromQual("project_id")},
+			{Name: "project_id", Type: proto.ColumnType_STRING, Description: "Filter-only column: use project_id = '<id>' or project_id in (...) to return the issues of projects. Returns the filter value that matches one of the issue's projects.", Transform: transform.FromField("Projects").Transform(issueProjectId)},
 			{Name: "entity_snapshot", Type: proto.ColumnType_JSON, Description: "A snapshot of the resource the issue is about."},
 			{Name: "entity_type", Type: proto.ColumnType_STRING, Description: "The graph entity type of the resource, e.g. VIRTUAL_MACHINE, BUCKET.", Transform: transform.FromField("EntitySnapshot.Type")},
 			{Name: "entity_name", Type: proto.ColumnType_STRING, Description: "The name of the resource.", Transform: transform.FromField("EntitySnapshot.Name")},
@@ -100,7 +100,7 @@ func listWizIssues(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 	options.IncludeExtras = columnRequested(d, issueExtraColumns...)
 
 	// Default set to 500.
-	// This is the maximum number of items can be requested, and also the cap when extras are selected.
+	// This is the maximum number of items can be requested.
 	pageLimit := 500
 
 	// Adjust page limit, if less than default value
@@ -113,7 +113,7 @@ func listWizIssues(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDa
 	// Check for additional filters
 	options.Filter = &api.IssueFilter{}
 	options.Filter.SourceControl = stringListQual(d, "control_id")
-	options.Filter.FrameworkCategory = singleStringQual(d, "framework_category_id")
+	options.Filter.FrameworkCategory = stringListQual(d, "framework_category_id")
 	options.Filter.ResolutionReason = stringListQual(d, "resolution_reason")
 	options.Filter.HasServiceTicket = boolQual(d, "has_service_ticket")
 	options.Filter.ProjectId = stringListQual(d, "project_id")
@@ -200,26 +200,31 @@ func issueControlId(_ context.Context, d *transform.TransformData) (interface{},
 	if !ok {
 		return nil, nil
 	}
-	for _, q := range d.KeyColumnQuals["control_id"] {
-		if q.Operator != "=" || q.Value == nil {
-			continue
-		}
-		wanted := []string{q.Value.GetStringValue()}
-		if list := q.Value.GetListValue(); list != nil {
-			wanted = []string{}
-			for _, v := range list.Values {
-				wanted = append(wanted, v.GetStringValue())
-			}
-		}
-		for _, rule := range rules {
-			if slices.Contains(wanted, rule.Id) {
-				return rule.Id, nil
-			}
+	wanted := transformQualValues(d, "control_id")
+	for _, rule := range rules {
+		if slices.Contains(wanted, rule.Id) {
+			return rule.Id, nil
 		}
 	}
 	for _, rule := range rules {
 		if rule.Typename == "Control" {
 			return rule.Id, nil
+		}
+	}
+	return nil, nil
+}
+
+// issueProjectId returns the project_id qual value that matches one of the issue's projects,
+// so the Postgres re-check keeps the rows the API matched. Nil when project_id is not filtered.
+func issueProjectId(_ context.Context, d *transform.TransformData) (interface{}, error) {
+	projects, ok := d.Value.([]api.IssueQueryProject)
+	if !ok {
+		return nil, nil
+	}
+	wanted := transformQualValues(d, "project_id")
+	for _, project := range projects {
+		if slices.Contains(wanted, project.Id) {
+			return project.Id, nil
 		}
 	}
 	return nil, nil

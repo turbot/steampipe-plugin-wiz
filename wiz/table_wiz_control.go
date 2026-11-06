@@ -3,7 +3,6 @@ package wiz
 import (
 	"context"
 
-	"github.com/turbot/go-kit/types"
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
@@ -55,7 +54,7 @@ func tableWizControl(ctx context.Context) *plugin.Table {
 			{Name: "tags", Type: proto.ColumnType_JSON, Description: "The list of tags associated with the control, as \"key\" or \"key:value\" strings.", Transform: transform.FromField("TagsV2").Transform(controlTagStrings)},
 			{Name: "tags_v2", Type: proto.ColumnType_JSON, Description: "The list of key/value tags associated with the control."},
 			{Name: "query", Type: proto.ColumnType_JSON, Description: "The query that the control runs. If query is null, this is a built in control with custom logic."},
-			{Name: "framework_category_id", Type: proto.ColumnType_STRING, Description: "The security framework ID that the control is associated with.", Transform: transform.FromQual("framework_category_id")},
+			{Name: "framework_category_id", Type: proto.ColumnType_STRING, Description: "Filter-only column: use framework_category_id = '<id>' to return the controls of a security framework category. List filters (in) on this column are not supported.", Transform: transform.FromValue().TransformP(scalarQualValue, "framework_category_id")},
 		},
 	}
 }
@@ -84,35 +83,12 @@ func listWizControls(ctx context.Context, d *plugin.QueryData, _ *plugin.Hydrate
 	options.Limit = pageLimit
 
 	// Check for additional filters
-	if d.EqualsQuals["enabled"] != nil {
-		options.Enabled = types.Bool(d.EqualsQuals["enabled"].GetBoolValue())
-	}
-	options.FrameworkCategory = singleStringQual(d, "framework_category_id")
-	if d.EqualsQuals["has_auto_remediation"] != nil {
-		options.HasAutoRemediation = types.Bool(d.EqualsQuals["has_auto_remediation"].GetBoolValue())
-	}
+	options.Enabled = boolQual(d, "enabled")
+	options.FrameworkCategory = stringListQual(d, "framework_category_id")
+	options.HasAutoRemediation = boolQual(d, "has_auto_remediation")
 	options.Project = singleStringQual(d, "project_id")
 	options.Severity = singleStringQual(d, "severity")
 	options.Type = singleStringQual(d, "type")
-
-	// Check for not equal qual
-	filterQuals := []string{"enabled", "has_auto_remediation"}
-	for _, qual := range filterQuals {
-		if d.Quals[qual] != nil {
-			for _, q := range d.Quals[qual].Quals {
-				value := q.Value.GetBoolValue()
-				if q.Operator == "<>" {
-					switch qual {
-					case "enabled":
-						options.Enabled = types.Bool(!value)
-					case "has_auto_remediation":
-						options.HasAutoRemediation = types.Bool(!value)
-					}
-					break
-				}
-			}
-		}
-	}
 
 	for {
 		query, err := api.ListControls(context.Background(), conn, options)

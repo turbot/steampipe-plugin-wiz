@@ -76,8 +76,8 @@ func tableWizSASTFinding(ctx context.Context) *plugin.Table {
 			{Name: "projects", Type: proto.ColumnType_JSON, Description: "The projects the finding belongs to."},
 			{Name: "vcs_details", Type: proto.ColumnType_JSON, Description: "Version control details of the finding (commit and code owners)."},
 			{Name: "related_issue_analytics", Type: proto.ColumnType_JSON, Description: "Counts of related issues by severity."},
-			{Name: "service_tickets", Type: proto.ColumnType_JSON, Description: "The service tickets (e.g. Jira) linked to the finding through its posture issues and its first 50 related issues, deduplicated. Selecting this column makes the query slower and caps the page size at 500.", Transform: transform.FromValue().Transform(findingServiceTickets)},
-			{Name: "has_service_ticket", Type: proto.ColumnType_BOOL, Description: "True, if a service ticket is linked to the finding through its posture issues or its first 50 related issues. Selecting this column makes the query slower and caps the page size at 500.", Transform: transform.FromValue().Transform(findingHasServiceTicket)},
+			{Name: "service_tickets", Type: proto.ColumnType_JSON, Description: "The service tickets (e.g. Jira) linked to the finding through its posture issues and its first 50 related issues, deduplicated. Selecting this column makes the query slower.", Transform: transform.FromValue().Transform(findingServiceTickets)},
+			{Name: "has_service_ticket", Type: proto.ColumnType_BOOL, Description: "True, if a service ticket is linked to the finding through its posture issues or its first 50 related issues. Selecting this column makes the query slower.", Transform: transform.FromValue().Transform(findingHasServiceTicket)},
 		},
 	}
 }
@@ -101,7 +101,7 @@ func listWizSASTFindings(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 	options := &api.ListSASTFindingsRequestConfiguration{}
 
 	// Default set to 500.
-	// This is the maximum number of items can be requested, and also the cap when service tickets are selected.
+	// This is the maximum number of items can be requested.
 	pageLimit := 500
 
 	// Adjust page limit, if less than default value
@@ -178,5 +178,10 @@ func getWizSASTFinding(ctx context.Context, d *plugin.QueryData, h *plugin.Hydra
 		return nil, err
 	}
 
-	return query.SASTFinding, nil
+	// The API returns null for an unknown ID
+	if query.SASTFinding == nil {
+		return nil, nil
+	}
+
+	return *query.SASTFinding, nil
 }

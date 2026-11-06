@@ -28,7 +28,8 @@ func boolQual(d *plugin.QueryData, column string) *bool {
 	return nil
 }
 
-// stringListQual returns the values of an "=" or "in" qual on a string column
+// stringListQual returns the values of an "=" or "in" qual on a string column.
+// The SDK splits a single "in" list into one call per value; with 2+ list quals the lists arrive here whole.
 func stringListQual(d *plugin.QueryData, column string) []string {
 	qual := d.EqualsQuals[column]
 	if qual == nil {
@@ -50,7 +51,7 @@ func stringListQual(d *plugin.QueryData, column string) []string {
 }
 
 // singleStringQual returns the value of an "=" qual for API filters that take a single value.
-// An "in" list with several values is not pushed down; Postgres filters those rows itself.
+// A list that reaches here unsplit (2+ list quals) is not pushed down; Postgres filters those rows itself.
 func singleStringQual(d *plugin.QueryData, column string) string {
 	if values := stringListQual(d, column); len(values) == 1 {
 		return values[0]
@@ -75,7 +76,8 @@ func findingStatusQual(d *plugin.QueryData) (statuses []string, onlyInProgress b
 }
 
 // timeRangeQual converts comparison quals on a timestamp column into an API date filter.
-// "in" quals are not pushed down; Postgres filters those rows itself.
+// The SDK splits a single "in" list into one call per value; a list that reaches here unsplit
+// (2+ list quals) is not pushed down, and Postgres filters those rows itself.
 func timeRangeQual(d *plugin.QueryData, column string) *api.DateFilter {
 	if d.Quals[column] == nil {
 		return nil
@@ -104,6 +106,35 @@ func timeRangeQual(d *plugin.QueryData, column string) *api.DateFilter {
 		return nil
 	}
 	return filter
+}
+
+// transformQualValues returns the string values of the "=" quals on a column, flattening "in" lists
+func transformQualValues(d *transform.TransformData, column string) []string {
+	values := []string{}
+	for _, q := range d.KeyColumnQuals[column] {
+		if q.Operator != "=" || q.Value == nil {
+			continue
+		}
+		if list := q.Value.GetListValue(); list != nil {
+			for _, v := range list.Values {
+				values = append(values, v.GetStringValue())
+			}
+			continue
+		}
+		values = append(values, q.Value.GetStringValue())
+	}
+	return values
+}
+
+// scalarQualValue returns the value of a single scalar "=" qual on the column named by the
+// transform param, or nil when the qual is unset or a list. Used by filter-only columns.
+func scalarQualValue(_ context.Context, d *transform.TransformData) (interface{}, error) {
+	column, _ := d.Param.(string)
+	quals := d.KeyColumnQuals[column]
+	if len(quals) != 1 || quals[0].Operator != "=" || quals[0].Value == nil || quals[0].Value.GetListValue() != nil {
+		return nil, nil
+	}
+	return quals[0].Value.GetStringValue(), nil
 }
 
 // columnRequested reports whether the query selects any of the given columns

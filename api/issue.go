@@ -304,7 +304,7 @@ type IssueFilter struct {
 	CreatedAt *DateFilter
 
 	// Filter issues using any of securityFramework | securitySubCategory | securityCategory.
-	FrameworkCategory string
+	FrameworkCategory []string
 
 	// Filter issues that have (or don't have) a service ticket.
 	HasServiceTicket *bool
@@ -388,7 +388,7 @@ func ListIssues(
 	// Check for optional filters
 	filter := map[string]interface{}{}
 	if options.Filter != nil {
-		if options.Filter.FrameworkCategory != "" {
+		if len(options.Filter.FrameworkCategory) > 0 {
 			filter["frameworkCategory"] = options.Filter.FrameworkCategory
 		}
 		if options.Filter.HasServiceTicket != nil {

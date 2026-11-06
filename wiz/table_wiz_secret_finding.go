@@ -74,8 +74,8 @@ func tableWizSecretFinding(ctx context.Context) *plugin.Table {
 			{Name: "vcs_code_owners", Type: proto.ColumnType_JSON, Description: "The code owners of the file in the version control system."},
 			{Name: "vcs_details", Type: proto.ColumnType_JSON, Description: "Version control details (initial commit) of the secret."},
 			{Name: "related_issue_analytics", Type: proto.ColumnType_JSON, Description: "Counts of related issues by severity."},
-			{Name: "service_tickets", Type: proto.ColumnType_JSON, Description: "The service tickets (e.g. Jira) linked to the finding through its posture issues and its first 50 related issues, deduplicated. Selecting this column makes the query slower and caps the page size at 500.", Transform: transform.FromValue().Transform(findingServiceTickets)},
-			{Name: "has_service_ticket", Type: proto.ColumnType_BOOL, Description: "True, if a service ticket is linked to the finding through its posture issues or its first 50 related issues. Selecting this column makes the query slower and caps the page size at 500.", Transform: transform.FromValue().Transform(findingHasServiceTicket)},
+			{Name: "service_tickets", Type: proto.ColumnType_JSON, Description: "The service tickets (e.g. Jira) linked to the finding through its posture issues and its first 50 related issues, deduplicated. Selecting this column makes the query slower.", Transform: transform.FromValue().Transform(findingServiceTickets)},
+			{Name: "has_service_ticket", Type: proto.ColumnType_BOOL, Description: "True, if a service ticket is linked to the finding through its posture issues or its first 50 related issues. Selecting this column makes the query slower.", Transform: transform.FromValue().Transform(findingHasServiceTicket)},
 		},
 	}
 }
@@ -99,7 +99,7 @@ func listWizSecretFindings(ctx context.Context, d *plugin.QueryData, _ *plugin.H
 	options := &api.ListSecretFindingsRequestConfiguration{}
 
 	// Default set to 500.
-	// This is the maximum number of items can be requested, and also the cap when service tickets are selected.
+	// This is the maximum number of items can be requested.
 	pageLimit := 500
 
 	// Adjust page limit, if less than default value

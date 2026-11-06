@@ -162,7 +162,7 @@ type ListControlsRequestConfiguration struct {
 	EndCursor string
 
 	// Optional - filter controls using any of securityFramework | securitySubCategory | securityCategory.
-	FrameworkCategory string
+	FrameworkCategory []string
 
 	// Optional - filter controls which their related cloud configuration rule have auto remediation.
 	HasAutoRemediation *bool
@@ -207,7 +207,7 @@ func ListControls(
 	if options.Enabled != nil {
 		filter["enabled"] = options.Enabled
 	}
-	if options.FrameworkCategory != "" {
+	if len(options.FrameworkCategory) > 0 {
 		filter["frameworkCategory"] = options.FrameworkCategory
 	}
 	if options.HasAutoRemediation != nil {
