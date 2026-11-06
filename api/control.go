@@ -6,6 +6,12 @@ import (
 	"github.com/machinebox/graphql"
 )
 
+// Control tag object
+type ControlTag struct {
+	Key   string  `json:"key"`
+	Value *string `json:"value"`
+}
+
 // Define the query
 const (
 	queryControlList = `
@@ -33,7 +39,10 @@ query ListControls($first: Int, $after: String, $filter: ControlFilters) {
         id
       }
       createdAt
-      tags
+      tagsV2 {
+        key
+        value
+      }
       scopeProject {
         id
       }
@@ -69,7 +78,10 @@ query GetControl($id: ID!) {
       id
     }
     createdAt
-    tags
+    tagsV2 {
+      key
+      value
+    }
     scopeProject {
       id
     }
@@ -110,7 +122,7 @@ type Control struct {
 	Severity                          string                      `json:"severity"`
 	SourceCloudConfigurationRule      ControlQueryCloudConfigRule `json:"sourceCloudConfigurationRule"`
 	SupportsNRT                       bool                        `json:"supportsNRT"`
-	Tags                              []string                    `json:"tags"`
+	TagsV2                            []ControlTag                `json:"tagsV2"`
 	Type                              string                      `json:"type"`
 }
 

@@ -166,8 +166,8 @@ from
   join wiz_project as p on json_extract(ep.value, '$.id') = p.id;
 ```
 
-### List all SAML users
-Discover the segments that are using SAML as their identity provider. This can be particularly useful to understand user distribution across different identity providers and assess if any particular group needs attention.
+### List all SSO users
+Discover the segments that are using single sign-on (SSO, e.g. SAML) as their identity provider. This can be particularly useful to understand user distribution across different identity providers and assess if any particular group needs attention.
 
 ```sql+postgres
 select
@@ -181,7 +181,7 @@ select
 from
   wiz_user
 where
-  identity_provider_type = 'SAML';
+  identity_provider_type = 'SSO';
 ```
 
 ```sql+sqlite
@@ -196,5 +196,5 @@ select
 from
   wiz_user
 where
-  identity_provider_type = 'SAML';
+  identity_provider_type = 'SSO';
 ```

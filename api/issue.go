@@ -10,120 +10,160 @@ import (
 const (
 	queryIssueList = `
 query ListIssues($first: Int, $after: String, $filter: IssueFilters) {
-  issues(first: $first, after: $after, filterBy: $filter) {
+  issuesV2(first: $first, after: $after, filterBy: $filter) {
     pageInfo {
       hasNextPage
       endCursor
     }
     totalCount
     nodes {
-      id
-      description
-      status
-      severity
-      createdAt
-      updatedAt
-      resolvedAt
-      dueAt
-      rejectionExpiredAt
-      statusChangedAt
-      resolutionReason
-      entity {
-        id
-        name
-      }
-      control {
-        id
-      }
-      notes {
-        id
-        createdAt
-        updatedAt
-        text
-        user {
-          id
-          name
-        }
-        serviceAccount {
-          id
-        }
-      }
-      serviceTickets {
-        id
-        name
-        url
-        externalId
-        integration {
-          id
-        }
-        project {
-          id
-          name
-        }
-      }
-      projects {
-        id
-        name
-      }
+      ...IssueDetails
     }
   }
 }
-`
+` + fragmentIssue
+
+	queryIssueListWithExtras = `
+query ListIssuesWithExtras($first: Int, $after: String, $filter: IssueFilters) {
+  issuesV2(first: $first, after: $after, filterBy: $filter) {
+    pageInfo {
+      hasNextPage
+      endCursor
+    }
+    totalCount
+    nodes {
+      ...IssueDetails
+      ...IssueExtras
+    }
+  }
+}
+` + fragmentIssue + fragmentIssueExtras
+
 	queryIssueGet = `
 query GetIssue($id: ID!) {
   issue(id: $id) {
+    ...IssueDetails
+  }
+}
+` + fragmentIssue
+
+	queryIssueGetWithExtras = `
+query GetIssueWithExtras($id: ID!) {
+  issue(id: $id) {
+    ...IssueDetails
+    ...IssueExtras
+  }
+}
+` + fragmentIssue + fragmentIssueExtras
+)
+
+// Fields selected for every Issue row
+const fragmentIssue = `
+fragment IssueDetails on Issue {
+  id
+  type
+  description
+  status
+  severity
+  createdAt
+  updatedAt
+  resolvedAt
+  dueAt
+  rejectionExpiredAt
+  statusChangedAt
+  firstEventAt
+  lastEventAt
+  resolutionReason
+  resolutionNote
+  openReason
+  url
+  hasCodeRemediation
+  hasCodeToCloudMapping
+  validatedAsExploitable
+  environments
+  entity {
     id
-    description
+    name
+  }
+  entitySnapshot {
+    id
+    type
+    nativeType
+    name
+    cloudPlatform
+    externalId
+    providerId
+    region
     status
-    severity
+    subscriptionId
+    subscriptionExternalId
+    subscriptionName
+    kubernetesClusterId
+    kubernetesClusterName
+    kubernetesNamespaceName
+    cloudProviderURL
+    tags
+  }
+  sourceRules {
+    __typename
+    id
+    name
+  }
+  notes {
+    id
     createdAt
     updatedAt
-    resolvedAt
-    dueAt
-    rejectionExpiredAt
-    statusChangedAt
-    resolutionReason
-    entity {
+    text
+    user {
       id
       name
     }
-    control {
+    serviceAccount {
       id
     }
-    notes {
-      id
-      createdAt
-      updatedAt
-      text
-      user {
-        id
-        name
-      }
-      serviceAccount {
-        id
-      }
-    }
-    serviceTickets {
+  }
+  serviceTickets {
+    id
+    name
+    url
+    externalId
+    integration {
       id
       name
-      url
-      externalId
-      integration {
-        id
-      }
-      project {
-        id
-        name
-      }
     }
-    projects {
+    project {
+      id
+      name
+    }
+  }
+  projects {
+    id
+    name
+  }
+}
+`
+
+// Application services and risk factors of an issue; only selected when requested
+const fragmentIssueExtras = `
+fragment IssueExtras on Issue {
+  applicationServices {
+    id
+    displayName
+  }
+  relatedApplicationServices {
+    id
+    displayName
+  }
+  riskFactors {
+    id
+    severity
+    policy {
       id
       name
     }
   }
 }
 `
-)
 
 // The graph object
 type GraphEntity struct {
@@ -146,14 +186,54 @@ type IssueQueryAutomationAction struct {
 	Id string `json:"id"`
 }
 
-// Control information
-type IssueQueryControl struct {
-	Id string `json:"id"`
+// Source rule (control, cloud configuration rule or cloud event rule) that generated the issue
+type IssueSourceRule struct {
+	Typename string `json:"__typename"`
+	Id       string `json:"id"`
+	Name     string `json:"name"`
 }
 
 // Integration information
 type IssueQueryIntegration struct {
-	Id string `json:"id"`
+	Id   string `json:"id"`
+	Name string `json:"name,omitempty"`
+}
+
+// Snapshot of the entity an issue is about, taken when the issue was last updated
+type IssueEntitySnapshot struct {
+	CloudPlatform           string      `json:"cloudPlatform,omitempty"`
+	CloudProviderURL        string      `json:"cloudProviderURL,omitempty"`
+	ExternalId              string      `json:"externalId,omitempty"`
+	Id                      string      `json:"id"`
+	KubernetesClusterId     string      `json:"kubernetesClusterId,omitempty"`
+	KubernetesClusterName   string      `json:"kubernetesClusterName,omitempty"`
+	KubernetesNamespaceName string      `json:"kubernetesNamespaceName,omitempty"`
+	Name                    string      `json:"name"`
+	NativeType              string      `json:"nativeType,omitempty"`
+	ProviderId              string      `json:"providerId,omitempty"`
+	Region                  string      `json:"region,omitempty"`
+	Status                  string      `json:"status,omitempty"`
+	SubscriptionExternalId  string      `json:"subscriptionExternalId,omitempty"`
+	SubscriptionId          string      `json:"subscriptionId,omitempty"`
+	SubscriptionName        string      `json:"subscriptionName,omitempty"`
+	Tags                    interface{} `json:"tags,omitempty"`
+	Type                    string      `json:"type"`
+}
+
+// Application service linked to an issue
+type IssueApplicationService struct {
+	DisplayName string `json:"displayName"`
+	Id          string `json:"id"`
+}
+
+// Risk factor of an issue
+type IssueRiskFactor struct {
+	Id     string `json:"id"`
+	Policy struct {
+		Id   string `json:"id"`
+		Name string `json:"name"`
+	} `json:"policy"`
+	Severity string `json:"severity"`
 }
 
 // Project information
@@ -186,49 +266,74 @@ type IssueServiceTickets struct {
 
 // Issue object
 type Issue struct {
-	Control            IssueQueryControl     `json:"control"`
-	CreatedAt          string                `json:"createdAt"`
-	Description        string                `json:"description"`
-	DueAt              string                `json:"dueAt"`
-	Entity             GraphEntity           `json:"entity"`
-	Id                 string                `json:"id"`
-	Notes              []IssueNote           `json:"notes"`
-	Projects           []IssueQueryProject   `json:"projects"`
-	RejectionExpiredAt string                `json:"rejectionExpiredAt"`
-	ResolutionReason   string                `json:"resolutionReason"`
-	ResolvedAt         string                `json:"resolvedAt"`
-	ServiceTickets     []IssueServiceTickets `json:"serviceTickets"`
-	Severity           string                `json:"severity"`
-	Status             string                `json:"status"`
-	StatusChangedAt    string                `json:"statusChangedAt"`
-	UpdatedAt          string                `json:"updatedAt"`
+	ApplicationServices        []IssueApplicationService `json:"applicationServices"`
+	CreatedAt                  string                    `json:"createdAt"`
+	Description                string                    `json:"description"`
+	DueAt                      string                    `json:"dueAt"`
+	Entity                     GraphEntity               `json:"entity"`
+	EntitySnapshot             *IssueEntitySnapshot      `json:"entitySnapshot"`
+	Environments               []string                  `json:"environments"`
+	FirstEventAt               string                    `json:"firstEventAt"`
+	HasCodeRemediation         bool                      `json:"hasCodeRemediation"`
+	HasCodeToCloudMapping      bool                      `json:"hasCodeToCloudMapping"`
+	Id                         string                    `json:"id"`
+	LastEventAt                string                    `json:"lastEventAt"`
+	Notes                      []IssueNote               `json:"notes"`
+	OpenReason                 string                    `json:"openReason"`
+	Projects                   []IssueQueryProject       `json:"projects"`
+	RejectionExpiredAt         string                    `json:"rejectionExpiredAt"`
+	RelatedApplicationServices []IssueApplicationService `json:"relatedApplicationServices"`
+	ResolutionNote             string                    `json:"resolutionNote"`
+	ResolutionReason           string                    `json:"resolutionReason"`
+	ResolvedAt                 string                    `json:"resolvedAt"`
+	RiskFactors                []IssueRiskFactor         `json:"riskFactors"`
+	ServiceTickets             []IssueServiceTickets     `json:"serviceTickets"`
+	Severity                   string                    `json:"severity"`
+	SourceRules                []IssueSourceRule         `json:"sourceRules"`
+	Status                     string                    `json:"status"`
+	StatusChangedAt            string                    `json:"statusChangedAt"`
+	Type                       string                    `json:"type"`
+	UpdatedAt                  string                    `json:"updatedAt"`
+	Url                        string                    `json:"url"`
+	ValidatedAsExploitable     bool                      `json:"validatedAsExploitable"`
 }
 
 // Issue filter object
 type IssueFilter struct {
 	// Filter Issues created before/after provided date.
-	CreatedAt DateFilter
+	CreatedAt *DateFilter
 
 	// Filter issues using any of securityFramework | securitySubCategory | securityCategory.
 	FrameworkCategory string
 
+	// Filter issues that have (or don't have) a service ticket.
+	HasServiceTicket *bool
+
+	// Filter issues by project ID.
+	ProjectId []string
+
 	// The control severity.
 	//
 	// Possible values are: INFORMATIONAL, LOW, MEDIUM, HIGH, CRITICAL.
-	Severity string
+	Severity []string
 
-	// Filter issues created by specific control ID.
-	SourceControl string
+	// Filter issues created by a specific source rule (control) ID.
+	SourceControl []string
 
 	// The issue status.
 	//
 	// Possible values are: OPEN, IN_PROGRESS, RESOLVED, REJECTED.
-	Status string
+	Status []string
+
+	// The issue type.
+	//
+	// Possible values are: TOXIC_COMBINATION, THREAT_DETECTION, CLOUD_CONFIGURATION, ATTACK_SURFACE, RISK_TOXIC_COMBINATION.
+	Type []string
 
 	// Filter issues by resolution reason.
 	//
 	// Possible values are: OBJECT_DELETED, ISSUE_FIXED, CONTROL_CHANGED, CONTROL_DISABLED, CONTROL_DELETED, FALSE_POSITIVE, EXCEPTION, WONT_FIX.
-	ResolutionReason string
+	ResolutionReason []string
 }
 
 // Relay-style node for the issue
@@ -240,7 +345,7 @@ type IssueConnection struct {
 
 // ListIssuesResponse is returned by ListIssues on success
 type ListIssuesResponse struct {
-	Issues IssueConnection `json:"issues"`
+	Issues IssueConnection `json:"issuesV2"`
 }
 
 // Fields used to filter the issue response
@@ -250,6 +355,9 @@ type ListIssuesRequestConfiguration struct {
 
 	// Optional - filters object
 	Filter *IssueFilter
+
+	// Optional - also select application services and risk factors (slower).
+	IncludeExtras bool
 
 	// The maximum number of results to return in a single call. To retrieve the
 	// remaining results, make another call with the returned EndCursor value.
@@ -271,7 +379,11 @@ func ListIssues(
 	options *ListIssuesRequestConfiguration,
 ) (*ListIssuesResponse, error) {
 	// Make a request
-	req := graphql.NewRequest(queryIssueList)
+	query := queryIssueList
+	if options.IncludeExtras {
+		query = queryIssueListWithExtras
+	}
+	req := graphql.NewRequest(query)
 
 	// Check for optional filters
 	filter := map[string]interface{}{}
@@ -279,29 +391,30 @@ func ListIssues(
 		if options.Filter.FrameworkCategory != "" {
 			filter["frameworkCategory"] = options.Filter.FrameworkCategory
 		}
-		if options.Filter.Severity != "" {
+		if options.Filter.HasServiceTicket != nil {
+			filter["hasServiceTicket"] = *options.Filter.HasServiceTicket
+		}
+		if len(options.Filter.ProjectId) > 0 {
+			filter["project"] = options.Filter.ProjectId
+		}
+		if len(options.Filter.Severity) > 0 {
 			filter["severity"] = options.Filter.Severity
 		}
-		if options.Filter.SourceControl != "" {
-			filter["sourceControl"] = options.Filter.SourceControl
+		if len(options.Filter.SourceControl) > 0 {
+			filter["sourceRule"] = map[string]interface{}{"id": options.Filter.SourceControl}
 		}
-		if options.Filter.Status != "" {
+		if len(options.Filter.Status) > 0 {
 			filter["status"] = options.Filter.Status
 		}
-		if options.Filter.ResolutionReason != "" {
+		if len(options.Filter.Type) > 0 {
+			filter["type"] = options.Filter.Type
+		}
+		if len(options.Filter.ResolutionReason) > 0 {
 			filter["resolutionReason"] = options.Filter.ResolutionReason
 		}
 
-		filter["createdAt"] = map[string]string{}
-		if options.Filter.CreatedAt.After != "" {
-			filter["createdAt"] = map[string]string{
-				"after": options.Filter.CreatedAt.After,
-			}
-		}
-		if options.Filter.CreatedAt.Before != "" {
-			filter["createdAt"] = map[string]string{
-				"before": options.Filter.CreatedAt.Before,
-			}
+		if options.Filter.CreatedAt != nil {
+			filter["createdAt"] = options.Filter.CreatedAt.ToVar()
 		}
 	}
 	req.Var("filter", filter)
@@ -341,9 +454,14 @@ func GetIssue(
 	ctx context.Context,
 	client *Client,
 	id string,
+	includeExtras bool,
 ) (*GetIssueResponse, error) {
 	// Make a request
-	req := graphql.NewRequest(queryIssueGet)
+	query := queryIssueGet
+	if includeExtras {
+		query = queryIssueGetWithExtras
+	}
+	req := graphql.NewRequest(query)
 
 	// Set the required variables
 	req.Var("id", id)

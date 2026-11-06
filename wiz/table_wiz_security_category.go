@@ -59,9 +59,7 @@ func listWizSecurityCategories(ctx context.Context, d *plugin.QueryData, _ *plug
 	options.Limit = pageLimit
 
 	// Check for additional filters
-	if d.EqualsQualString("framework_id") != "" {
-		options.FrameworkId = d.EqualsQualString("framework_id")
-	}
+	options.FrameworkId = singleStringQual(d, "framework_id")
 
 	for {
 		query, err := api.ListSecurityCategories(context.Background(), conn, options)

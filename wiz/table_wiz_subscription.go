@@ -29,13 +29,18 @@ func tableWizSubscription(ctx context.Context) *plugin.Table {
 			{Name: "name", Type: proto.ColumnType_STRING, Description: "The display name for the account."},
 			{Name: "id", Type: proto.ColumnType_STRING, Description: "A unique identifier of the account."},
 			{Name: "cloud_provider", Type: proto.ColumnType_STRING, Description: "The type of the cloud provider. Possible values are: AWS, GCP, OCI, Alibaba, Azure, Kubernetes, OpenShift, vSphere."},
-			{Name: "status", Type: proto.ColumnType_STRING, Description: "Cloud Account connectivity status as affected by configured connectors.  Possible values: CONNECTED, DISABLED, DISCONNECTED, DISCOVERED, ERROR, INITIAL_SCANNING, PARTIALLY_CONNECTED."},
+			{Name: "status", Type: proto.ColumnType_STRING, Description: "Cloud Account connectivity status as affected by configured connectors. Deprecated by Wiz in favour of system health issues, see the *_system_health_issue_count columns. Possible values: CONNECTED, DISABLED, DISCONNECTED, DISCOVERED, ERROR, INITIAL_SCANNING, PARTIALLY_CONNECTED."},
 			{Name: "last_scanned_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the cloud account was last scanned."},
 			{Name: "container_count", Type: proto.ColumnType_INT, Description: "Number of containers that are part of this cloud account."},
 			{Name: "external_id", Type: proto.ColumnType_STRING, Description: "External subscription ID from a cloud provider (subscriptionId in security graph)."},
 			{Name: "resource_count", Type: proto.ColumnType_INT, Description: "Number of resources that are part of this cloud account."},
 			{Name: "virtual_machine_count", Type: proto.ColumnType_INT, Description: "Number of virtual machines that are part of this cloud account."},
 			{Name: "linked_projects", Type: proto.ColumnType_JSON, Description: "A list of projects, this cloud account is assigned to."},
+			{Name: "critical_system_health_issue_count", Type: proto.ColumnType_INT, Description: "Number of critical system health issues for the cloud account."},
+			{Name: "high_system_health_issue_count", Type: proto.ColumnType_INT, Description: "Number of high system health issues for the cloud account."},
+			{Name: "medium_system_health_issue_count", Type: proto.ColumnType_INT, Description: "Number of medium system health issues for the cloud account."},
+			{Name: "low_system_health_issue_count", Type: proto.ColumnType_INT, Description: "Number of low system health issues for the cloud account."},
+			{Name: "informational_system_health_issue_count", Type: proto.ColumnType_INT, Description: "Number of informational system health issues for the cloud account."},
 		},
 	}
 }
@@ -64,12 +69,8 @@ func listWizSubscriptions(ctx context.Context, d *plugin.QueryData, _ *plugin.Hy
 	options.Limit = pageLimit
 
 	// Check for additional filters
-	if d.EqualsQualString("cloud_provider") != "" {
-		options.CloudProvider = d.EqualsQualString("cloud_provider")
-	}
-	if d.EqualsQualString("status") != "" {
-		options.Status = d.EqualsQualString("status")
-	}
+	options.CloudProvider = singleStringQual(d, "cloud_provider")
+	options.Status = singleStringQual(d, "status")
 
 	for {
 		query, err := api.ListSubscriptions(context.Background(), conn, options)
