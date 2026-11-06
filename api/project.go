@@ -35,11 +35,12 @@ query ListProjects($first: Int, $after: String) {
       teamMemberCount
       entityCount
       technologyCount
-      projectOwners {
+      projectOwnersV2 {
         id
+        name
       }
       identifiers
-      resourceTagLinks {
+      resourceFilterLinks {
         environment
         resourceTags {
           key
@@ -71,11 +72,12 @@ query GetProject($id: ID!) {
     teamMemberCount
     entityCount
     technologyCount
-    projectOwners {
+    projectOwnersV2 {
       id
+      name
     }
     identifiers
-    resourceTagLinks {
+    resourceFilterLinks {
       environment
       resourceTags {
         key
@@ -89,7 +91,8 @@ query GetProject($id: ID!) {
 
 // Owner information
 type ProjectOwner struct {
-	Id string `json:"id"`
+	Id   string `json:"id"`
+	Name string `json:"name"`
 }
 
 // Project resource tags link object
@@ -121,9 +124,9 @@ type Project struct {
 	Identifiers            []string                  `json:"identifiers"`
 	KubernetesClusterCount int                       `json:"kubernetesClusterCount"`
 	Name                   string                    `json:"name"`
-	ProjectOwners          []ProjectOwner            `json:"projectOwners"`
+	ProjectOwners          []ProjectOwner            `json:"projectOwnersV2"`
 	RepositoryCount        int                       `json:"repositoryCount"`
-	ResourceTagLinks       []ProjectResourceTagLinks `json:"resourceTagLinks"`
+	ResourceTagLinks       []ProjectResourceTagLinks `json:"resourceFilterLinks"`
 	RiskProfile            ProjectRiskProfile        `json:"riskProfile"`
 	SecurityScore          int                       `json:"securityScore"`
 	Slug                   string                    `json:"slug"`

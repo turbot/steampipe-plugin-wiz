@@ -66,15 +66,9 @@ func listWizServiceAccounts(ctx context.Context, d *plugin.QueryData, _ *plugin.
 	options.Limit = pageLimit
 
 	// Check for additional filters
-	if d.EqualsQualString("name") != "" {
-		options.Name = d.EqualsQualString("name")
-	}
-	if d.EqualsQualString("type") != "" {
-		options.Type = d.EqualsQualString("type")
-	}
-	if d.EqualsQualString("authentication_source") != "" {
-		options.Source = d.EqualsQualString("authentication_source")
-	}
+	options.Name = singleStringQual(d, "name")
+	options.Type = singleStringQual(d, "type")
+	options.Source = singleStringQual(d, "authentication_source")
 
 	for {
 		query, err := api.ListServiceAccounts(context.Background(), conn, options)

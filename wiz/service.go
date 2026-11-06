@@ -14,6 +14,8 @@ import (
 	"github.com/turbot/steampipe-plugin-wiz/api"
 )
 
+const wizAuthUrl = "https://auth.app.wiz.io/oauth/token"
+
 type accessToken struct {
 	AccessToken string `json:"access_token"`
 }
@@ -32,14 +34,11 @@ var clientCached = plugin.HydrateFunc(clientUncached).Memoize()
 
 // clientUncached returns the Wiz client and cached the data
 func clientUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (any, error) {
-	// Get the config
-	wizConfig := GetConfig(d.Connection)
-
 	// Get the credentials
-	clientId, clientSecret, url := getCredentialsByPrecedence(d)
+	clientId, clientSecret, apiUrl := getCredentialsByPrecedence(d)
 
 	// No creds
-	if url == "" {
+	if apiUrl == "" {
 		return nil, fmt.Errorf("url must be configured")
 	}
 
@@ -58,7 +57,7 @@ func clientUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateD
 	// Start with an empty Wiz config
 	config := api.ClientConfig{
 		Token: &accessToken,
-		Url:   wizConfig.Url,
+		Url:   &apiUrl,
 	}
 
 	// Create the client
@@ -86,23 +85,19 @@ var accessTokenCached = plugin.HydrateFunc(accessTokenUncached).Memoize()
 func accessTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateData) (any, error) {
 	plugin.Logger(ctx).Debug("Creating access token", "connection", d.Connection.Name)
 
-	// Get Wiz config
-	wizConfig := GetConfig(d.Connection)
+	clientId, clientSecret, _ := getCredentialsByPrecedence(d)
+	if clientId == "" || clientSecret == "" {
+		return nil, fmt.Errorf("client_id and client_secret must be configured")
+	}
 
-	clientId := wizConfig.ClientId
-	clientSecret := wizConfig.ClientSecret
-
-	auth_data := url.Values{}
-	auth_data.Set("grant_type", "client_credentials")
-	auth_data.Set("audience", "wiz-api")
-	auth_data.Set("client_id", *clientId)
-	auth_data.Set("client_secret", *clientSecret)
-
-	// Create client
-	client := &http.Client{}
+	authData := url.Values{}
+	authData.Set("grant_type", "client_credentials")
+	authData.Set("audience", "wiz-api")
+	authData.Set("client_id", clientId)
+	authData.Set("client_secret", clientSecret)
 
 	// Create request
-	r, err := http.NewRequest(http.MethodPost, "https://auth.app.wiz.io/oauth/token", strings.NewReader(auth_data.Encode()))
+	r, err := http.NewRequestWithContext(ctx, http.MethodPost, wizAuthUrl, strings.NewReader(authData.Encode()))
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %v", err)
 	}
@@ -114,29 +109,31 @@ func accessTokenUncached(ctx context.Context, d *plugin.QueryData, _ *plugin.Hyd
 	plugin.Logger(ctx).Debug("GetAccessToken", "Getting access token...")
 
 	// Make a request to get the token
-	resp, err := client.Do(r)
-
+	resp, err := http.DefaultClient.Do(r)
 	if err != nil {
-		return nil, fmt.Errorf("error getting token response. Status: %s, err: %v", resp.Status, err)
+		return nil, fmt.Errorf("error getting token response: %v", err)
 	}
+	defer func() { _ = resp.Body.Close() }()
 
-	if resp.Status != "200 OK" {
+	if resp.StatusCode != http.StatusOK {
 		return nil, fmt.Errorf("failed to generate access token, please verify your connection config. Status: %s", resp.Status)
 	}
 
 	// Read the response body
 	bodyBytes, err := io.ReadAll(resp.Body)
 	if err != nil {
-		plugin.Logger(ctx).Error("Failed reading response body", "body", string(bodyBytes), "error", err)
+		plugin.Logger(ctx).Error("Failed reading response body", "error", err)
 		return nil, fmt.Errorf("failed reading response body: %v", err)
 	}
 
 	// Parse the response body of type accessToken{}
 	at := accessToken{}
-	jsonErr := json.Unmarshal(bodyBytes, &at)
-	if jsonErr != nil {
-		plugin.Logger(ctx).Error("failed to parse token response", jsonErr)
-		return nil, fmt.Errorf("failed to parse token response: %v", jsonErr)
+	if err := json.Unmarshal(bodyBytes, &at); err != nil {
+		plugin.Logger(ctx).Error("failed to parse token response", "error", err)
+		return nil, fmt.Errorf("failed to parse token response: %v", err)
+	}
+	if at.AccessToken == "" {
+		return nil, fmt.Errorf("token response did not contain an access token")
 	}
 
 	return &at, nil
@@ -149,24 +146,24 @@ Precedence of credentials:
   - Credentials set in config
   - Value set using WIZ_AUTH_CLIENT_ID, WIZ_AUTH_CLIENT_SECRET, and WIZ_URL env variables
 */
-func getCredentialsByPrecedence(d *plugin.QueryData) (clientId string, clientSecret string, url string) {
+func getCredentialsByPrecedence(d *plugin.QueryData) (clientId string, clientSecret string, apiUrl string) {
 	// Get wiz config
 	wizConfig := GetConfig(d.Connection)
 
 	// Check for env vars
 	clientId = os.Getenv("WIZ_AUTH_CLIENT_ID")
 	clientSecret = os.Getenv("WIZ_AUTH_CLIENT_SECRET")
-	url = os.Getenv("WIZ_URL")
+	apiUrl = os.Getenv("WIZ_URL")
 
 	// If credentials set in the config, override it
-	if wizConfig.ClientId != nil {
+	if wizConfig.ClientId != nil && *wizConfig.ClientId != "" {
 		clientId = *wizConfig.ClientId
 	}
-	if wizConfig.ClientSecret != nil {
-		clientSecret = *wizConfig.ClientId
+	if wizConfig.ClientSecret != nil && *wizConfig.ClientSecret != "" {
+		clientSecret = *wizConfig.ClientSecret
 	}
-	if wizConfig.Url != nil {
-		url = *wizConfig.Url
+	if wizConfig.Url != nil && *wizConfig.Url != "" {
+		apiUrl = *wizConfig.Url
 	}
 
 	return

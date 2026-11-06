@@ -78,15 +78,9 @@ func listWizCloudConfigRules(ctx context.Context, d *plugin.QueryData, _ *plugin
 	options.Limit = pageLimit
 
 	// Check for additional filters
-	if d.EqualsQualString("cloud_provider") != "" {
-		options.CloudProvider = d.EqualsQualString("cloud_provider")
-	}
-	if d.EqualsQualString("service_type") != "" {
-		options.ServiceType = d.EqualsQualString("service_type")
-	}
-	if d.EqualsQualString("severity") != "" {
-		options.Severity = d.EqualsQualString("severity")
-	}
+	options.CloudProvider = singleStringQual(d, "cloud_provider")
+	options.ServiceType = singleStringQual(d, "service_type")
+	options.Severity = singleStringQual(d, "severity")
 	if d.EqualsQuals["enabled"] != nil {
 		options.Enabled = types.Bool(d.EqualsQuals["enabled"].GetBoolValue())
 	}

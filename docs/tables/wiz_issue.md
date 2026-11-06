@@ -16,9 +16,14 @@ The `wiz_issue` table provides insights into the security issues identified by W
   - `control_id`
   - `created_at`
   - `framework_category_id`
+  - `has_service_ticket`
+  - `project_id`
   - `resolution_reason`
   - `severity`
   - `status`
+  - `type`
+- `project_id` and `framework_category_id` are filter-only columns. `project_id` and `control_id` return the filter value that matches one of the issue's projects or source rules, so they work with `=` and `in` lists; with a single `in` list Steampipe makes one API call per value, so an issue that matches several values is returned once per value. `framework_category_id` supports only `=` with a single value; list filters on it are not supported.
+- `application_services`, `related_application_services` and `risk_factors` are only fetched when selected, which makes the query slower.
 
 ## Examples
 
@@ -219,4 +224,76 @@ where
   severity = 'HIGH'
   and status = 'OPEN'
   and created_at < datetime('now', '-7 days');
+```
+
+### Count open issues by service tag
+Group open issues by the `Service` tag of the affected resource, to see which services carry the most risk.
+
+```sql+postgres
+select
+  entity_tags ->> 'Service' as service,
+  count(*) filter (where severity = 'CRITICAL') as critical,
+  count(*) filter (where severity = 'HIGH') as high,
+  count(*) as total
+from
+  wiz_issue
+where
+  status = 'OPEN'
+group by
+  service
+order by
+  critical desc,
+  high desc;
+```
+
+```sql+sqlite
+select
+  json_extract(entity_tags, '$.Service') as service,
+  sum(case when severity = 'CRITICAL' then 1 else 0 end) as critical,
+  sum(case when severity = 'HIGH' then 1 else 0 end) as high,
+  count(*) as total
+from
+  wiz_issue
+where
+  status = 'OPEN'
+group by
+  service
+order by
+  critical desc,
+  high desc;
+```
+
+### List open critical issues without a service ticket
+Find critical issues that nobody is tracking yet, with the affected resource.
+
+```sql+postgres
+select
+  id,
+  type,
+  entity_type,
+  entity_name,
+  entity_subscription_name,
+  url
+from
+  wiz_issue
+where
+  status = 'OPEN'
+  and severity = 'CRITICAL'
+  and has_service_ticket = false;
+```
+
+```sql+sqlite
+select
+  id,
+  type,
+  entity_type,
+  entity_name,
+  entity_subscription_name,
+  url
+from
+  wiz_issue
+where
+  status = 'OPEN'
+  and severity = 'CRITICAL'
+  and has_service_ticket = 0;
 ```

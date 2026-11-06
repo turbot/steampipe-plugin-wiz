@@ -24,8 +24,10 @@ query ListUsers($first: Int, $after: String, $filter: UserFilters) {
       lastLoginAt
       isSuspended
       isAnalyticsEnabled
-      identityProviderType
-      role {
+      identityProviderType: identityProviderTypeV2
+      status
+      updatedAt
+      role: effectiveRole {
         id
         name
         description
@@ -54,8 +56,10 @@ query GetUser($id: ID!) {
     lastLoginAt
     isSuspended
     isAnalyticsEnabled
-    identityProviderType
-    role {
+    identityProviderType: identityProviderTypeV2
+    status
+    updatedAt
+    role: effectiveRole {
       id
       name
       description
@@ -97,7 +101,9 @@ type User struct {
 	LastLoginAt               string             `json:"lastLoginAt"`
 	Name                      string             `json:"name"`
 	Role                      UserRole           `json:"role"`
+	Status                    string             `json:"status"`
 	Tenant                    Tenant             `json:"tenant"`
+	UpdatedAt                 string             `json:"updatedAt"`
 }
 
 // Relay-style node for the user
@@ -116,7 +122,7 @@ type ListUsersResponse struct {
 type ListUsersRequestConfiguration struct {
 	// Optional - filter by provider type.
 	//
-	// Possible values are: WIZ, SAML.
+	// Possible values are: WIZ, SSO.
 	AuthProviderType string
 
 	// When paginating forwards, the cursor to continue.
@@ -147,7 +153,7 @@ func ListUsers(
 	// Check for optional filters
 	filter := map[string]string{}
 	if options.AuthProviderType != "" {
-		filter["authProviderType"] = options.AuthProviderType
+		filter["authProviderTypeV2"] = options.AuthProviderType
 	}
 	req.Var("filter", filter)
 

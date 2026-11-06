@@ -26,6 +26,11 @@ query ListSubscriptions($first: Int, $after: String, $filter: CloudAccountFilter
       virtualMachineCount
       externalId
       lastScannedAt
+      criticalSystemHealthIssueCount
+      highSystemHealthIssueCount
+      mediumSystemHealthIssueCount
+      lowSystemHealthIssueCount
+      informationalSystemHealthIssueCount
       linkedProjects {
         id
       }
@@ -45,6 +50,11 @@ query GetSubscription($id: ID!) {
     virtualMachineCount
     externalId
     lastScannedAt
+    criticalSystemHealthIssueCount
+    highSystemHealthIssueCount
+    mediumSystemHealthIssueCount
+    lowSystemHealthIssueCount
+    informationalSystemHealthIssueCount
     linkedProjects {
       id
     }
@@ -65,6 +75,12 @@ type Subscription struct {
 	ResourceCount       int                        `json:"resourceCount"`
 	Status              string                     `json:"status"`
 	VirtualMachineCount int                        `json:"virtualMachineCount"`
+
+	CriticalSystemHealthIssueCount      int `json:"criticalSystemHealthIssueCount"`
+	HighSystemHealthIssueCount          int `json:"highSystemHealthIssueCount"`
+	MediumSystemHealthIssueCount        int `json:"mediumSystemHealthIssueCount"`
+	LowSystemHealthIssueCount           int `json:"lowSystemHealthIssueCount"`
+	InformationalSystemHealthIssueCount int `json:"informationalSystemHealthIssueCount"`
 }
 
 // Assigned project information

@@ -153,10 +153,22 @@ type DateFilter struct {
 	Before string
 }
 
+// ToVar converts the date filter into the GraphQL input shape ({after, before})
+func (f *DateFilter) ToVar() map[string]string {
+	v := map[string]string{}
+	if f.After != "" {
+		v["after"] = f.After
+	}
+	if f.Before != "" {
+		v["before"] = f.Before
+	}
+	return v
+}
+
 // Fields used to filter the cloud configuration findings response
 type ListConfigurationFindingsRequestConfiguration struct {
 	// Optional - return findings detected within the given time range.
-	AnalyzedAt DateFilter
+	AnalyzedAt *DateFilter
 
 	// When paginating forwards, the cursor to continue.
 	EndCursor string
@@ -219,16 +231,8 @@ func ListConfigurationFindings(
 		filter["status"] = options.Status
 	}
 
-	filter["analyzedAt"] = map[string]string{}
-	if options.AnalyzedAt.After != "" {
-		filter["analyzedAt"] = map[string]string{
-			"after": options.AnalyzedAt.After,
-		}
-	}
-	if options.AnalyzedAt.Before != "" {
-		filter["analyzedAt"] = map[string]string{
-			"before": options.AnalyzedAt.Before,
-		}
+	if options.AnalyzedAt != nil {
+		filter["analyzedAt"] = options.AnalyzedAt.ToVar()
 	}
 	req.Var("filter", filter)
 

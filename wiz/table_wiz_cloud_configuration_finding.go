@@ -2,7 +2,6 @@ package wiz
 
 import (
 	"context"
-	"time"
 
 	"github.com/turbot/steampipe-plugin-sdk/v5/grpc/proto"
 	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
@@ -70,39 +69,13 @@ func listWizCloudConfigurationFindings(ctx context.Context, d *plugin.QueryData,
 	options.Limit = pageLimit
 
 	// Check for additional filters
-	if d.EqualsQualString("result") != "" {
-		options.Result = d.EqualsQualString("result")
-	}
-	if d.EqualsQualString("rule_id") != "" {
-		options.RuleId = d.EqualsQualString("rule_id")
-	}
-	if d.EqualsQualString("severity") != "" {
-		options.Severity = d.EqualsQualString("severity")
-	}
-	if d.EqualsQualString("status") != "" {
-		options.Status = d.EqualsQualString("status")
-	}
+	options.Result = singleStringQual(d, "result")
+	options.RuleId = singleStringQual(d, "rule_id")
+	options.Severity = singleStringQual(d, "severity")
+	options.Status = singleStringQual(d, "status")
 
 	// Filter using time range
-	if d.Quals["analyzed_at"] != nil {
-		options.AnalyzedAt = api.DateFilter{}
-		for _, q := range d.Quals["analyzed_at"].Quals {
-			givenTime := q.Value.GetTimestampValue().AsTime()
-			switch q.Operator {
-			case "=":
-				options.AnalyzedAt.After = givenTime.Add(-2 * time.Second).Format(time.RFC3339)
-				options.AnalyzedAt.Before = givenTime.Add(2 * time.Second).Format(time.RFC3339)
-			case ">=":
-				options.AnalyzedAt.After = givenTime.Add(-1 * time.Second).Format(time.RFC3339)
-			case ">":
-				options.AnalyzedAt.After = givenTime.Format(time.RFC3339)
-			case "<=":
-				options.AnalyzedAt.Before = givenTime.Add(1 * time.Second).Format(time.RFC3339)
-			case "<":
-				options.AnalyzedAt.Before = givenTime.Format(time.RFC3339)
-			}
-		}
-	}
+	options.AnalyzedAt = timeRangeQual(d, "analyzed_at")
 
 	for {
 		query, err := api.ListConfigurationFindings(context.Background(), conn, options)

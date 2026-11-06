@@ -9,20 +9,18 @@ import (
 // Define the query
 const (
 	queryUserRoleList = `
-query ListUserRoles($first: Int, $after: String) {
-  userRoles(first: $first, after: $after) {
-    pageInfo{
-      hasNextPage
-      endCursor
-    }
-    totalCount
-    nodes {
-      id
-      name
-      description
-      scopes
-      isProjectScoped
-    }
+query ListUserRoles($filter: UserRoleFilters) {
+  userRolesV2(filterBy: $filter) {
+    id
+    name
+    description
+    scopes
+    isProjectScoped
+    isTenantGroupScoped
+    builtin
+    createdAt
+    updatedAt
+    userCount
   }
 }
 `
@@ -30,37 +28,32 @@ query ListUserRoles($first: Int, $after: String) {
 
 // User role object
 type UserRole struct {
-	Description     string   `json:"description"`
-	Id              string   `json:"id"`
-	IsProjectScoped bool     `json:"isProjectScoped"`
-	Name            string   `json:"name"`
-	Scopes          []string `json:"scopes"`
-}
-
-// Relay-style node for the user-role
-type UserRoleConnection struct {
-	Nodes      []UserRole `json:"nodes"`
-	PageInfo   PageInfo   `json:"pageInfo"`
-	TotalCount int        `json:"totalCount"`
+	Builtin             bool     `json:"builtin,omitempty"`
+	CreatedAt           string   `json:"createdAt,omitempty"`
+	Description         string   `json:"description"`
+	Id                  string   `json:"id"`
+	IsProjectScoped     bool     `json:"isProjectScoped"`
+	IsTenantGroupScoped bool     `json:"isTenantGroupScoped,omitempty"`
+	Name                string   `json:"name"`
+	Scopes              []string `json:"scopes"`
+	UpdatedAt           string   `json:"updatedAt,omitempty"`
+	UserCount           *int     `json:"userCount,omitempty"`
 }
 
 // ListUserRolesResponse is returned by ListUserRoles on success
 type ListUserRolesResponse struct {
-	UserRoles UserRoleConnection `json:"userRoles"`
+	UserRoles []UserRole `json:"userRolesV2"`
 }
 
 type ListUserRolesRequestConfiguration struct {
-	// When paginating forwards, the cursor to continue.
-	EndCursor string
+	// Optional - return only built-in (true) or custom (false) roles.
+	Builtin *bool
 
-	// The maximum number of results to return in a single call. To retrieve the
-	// remaining results, make another call with the returned EndCursor value.
-	//
-	// Maximum limit is 100.
-	Limit int
+	// Optional - return only project scoped (true) or global (false) roles.
+	IsProjectScoped *bool
 }
 
-// ListUserRoles returns a paginated list of the available user roles
+// ListUserRoles returns all the available user roles. The API returns them in a single response.
 //
 // @param ctx context for configuration
 //
@@ -75,14 +68,14 @@ func ListUserRoles(
 	// Make a request
 	req := graphql.NewRequest(queryUserRoleList)
 
-	// Check for options and set it
-	if options.Limit > 0 {
-		req.Var("first", options.Limit)
+	filter := map[string]interface{}{}
+	if options.Builtin != nil {
+		filter["builtin"] = *options.Builtin
 	}
-
-	if options.EndCursor != "" {
-		req.Var("after", options.EndCursor)
+	if options.IsProjectScoped != nil {
+		filter["isProjectScoped"] = *options.IsProjectScoped
 	}
+	req.Var("filter", filter)
 
 	// execute api call
 	var responseData ListUserRolesResponse

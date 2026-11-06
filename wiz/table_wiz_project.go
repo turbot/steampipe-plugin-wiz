@@ -38,7 +38,7 @@ func tableWizProject(ctx context.Context) *plugin.Table {
 			{Name: "technology_count", Type: proto.ColumnType_INT, Description: "The count of the technology."},
 			{Name: "workload_count", Type: proto.ColumnType_INT, Description: "The count of the workload."},
 			{Name: "identifiers", Type: proto.ColumnType_JSON, Description: "A list of project identifiers."},
-			{Name: "project_owners", Type: proto.ColumnType_JSON, Description: "A list of project owners."},
+			{Name: "project_owners", Type: proto.ColumnType_JSON, Description: "A list of project owners (identities with id and name). Owner IDs are identity IDs, not wiz_user IDs."},
 			{Name: "resource_tag_links", Type: proto.ColumnType_STRING, Description: "A list of resource tags."},
 			{Name: "risk_profile", Type: proto.ColumnType_STRING, Description: "Specifies the project risk-profile."},
 		},

@@ -32,10 +32,12 @@ func tableWizUser(ctx context.Context) *plugin.Table {
 			{Name: "created_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the user was created."},
 			{Name: "last_login_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the user was last login to the console."},
 			{Name: "is_suspended", Type: proto.ColumnType_BOOL, Description: "If true, the user is suspended."},
-			{Name: "identity_provider_type", Type: proto.ColumnType_STRING, Description: "The auth provider type of the user. Possible values are: WIZ, SAML."},
+			{Name: "status", Type: proto.ColumnType_STRING, Description: "The status of the user."},
+			{Name: "updated_at", Type: proto.ColumnType_TIMESTAMP, Description: "The time when the user was last updated."},
+			{Name: "identity_provider_type", Type: proto.ColumnType_STRING, Description: "The auth provider type of the user. Possible values are: WIZ, SSO."},
 			{Name: "is_analytics_enabled", Type: proto.ColumnType_BOOL, Description: "If true, the user analytics is enabled."},
 			{Name: "ip_address", Type: proto.ColumnType_IPADDR, Description: "The IP address of the user."},
-			{Name: "role", Type: proto.ColumnType_JSON, Description: "Specifies the role assigned to the user."},
+			{Name: "role", Type: proto.ColumnType_JSON, Description: "Specifies the effective role assigned to the user."},
 			{Name: "effective_assigned_projects", Type: proto.ColumnType_JSON, Description: "A list of project ids this user was last logged in with. Null value means all projects are allowed."},
 			{Name: "tenant_id", Type: proto.ColumnType_STRING, Description: "Specifies the tenant the user is a member of.", Transform: transform.FromField("Tenant.Id")},
 		},
@@ -66,9 +68,7 @@ func listWizUsers(ctx context.Context, d *plugin.QueryData, _ *plugin.HydrateDat
 	options.Limit = pageLimit
 
 	// Check for additional filters
-	if d.EqualsQualString("identity_provider_type") != "" {
-		options.AuthProviderType = d.EqualsQualString("identity_provider_type")
-	}
+	options.AuthProviderType = singleStringQual(d, "identity_provider_type")
 
 	for {
 		query, err := api.ListUsers(context.Background(), conn, options)

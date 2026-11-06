@@ -1,3 +1,44 @@
+## Unreleased
+
+_What's new?_
+
+- New tables added
+  - [wiz_iac_finding](https://hub.steampipe.io/plugins/turbot/wiz/tables/wiz_iac_finding)
+  - [wiz_sast_finding](https://hub.steampipe.io/plugins/turbot/wiz/tables/wiz_sast_finding)
+  - [wiz_secret_finding](https://hub.steampipe.io/plugins/turbot/wiz/tables/wiz_secret_finding)
+  - [wiz_version_control_repository](https://hub.steampipe.io/plugins/turbot/wiz/tables/wiz_version_control_repository)
+- Added code (software composition analysis) and risk columns to the `wiz_vulnerability_finding` table, including `asset_type`, `repository_id`, `repository_name`, `reachability`, `reachability_evidence`, `call_paths`, `transitivity`, `is_transitive`, `has_fix`, `wiz_severity`, `vendor_severity`, `nvd_severity`, `weighted_severity`, `epss_*`, `origin`, `projects`, `vcs_code_owners`, `related_issue_analytics`, `artifact_type`, `updated_at` and `status_updated_at`, with new optional quals `asset_type`, `code_library_language`, `has_fix`, `is_default_branch`, `is_malicious_package`, `origin`, `reachability`, `transitivity`, `updated_at` and `wiz_severity`. List values on `severity`, `detection_method` and `vulnerability_external_id` are now pushed down together in one API filter.
+- Added `service_tickets` and `has_service_ticket` columns to the `wiz_vulnerability_finding`, `wiz_sast_finding` and `wiz_secret_finding` tables. They list the service tickets linked through the finding's related and posture issues, and are only fetched when selected.
+- Added `source_rules`, `type`, `url`, `first_event_at`, `last_event_at`, `resolution_note`, `open_reason`, `has_service_ticket`, `has_code_remediation`, `has_code_to_cloud_mapping`, `validated_as_exploitable`, `environments`, `entity_snapshot`, `entity_*`, `entity_tags`, `kubernetes_cluster_name`, `kubernetes_namespace_name`, `application_services`, `related_application_services` and `risk_factors` columns to the `wiz_issue` table, with new optional quals `type`, `has_service_ticket` and `project_id`. List values on `severity`, `status`, `type`, `resolution_reason`, `framework_category_id` and `project_id` are now pushed down together in one API filter. Application services and risk factors are only fetched when selected.
+- Added `tags_v2` column to the `wiz_control` table.
+- Added `builtin`, `is_tenant_group_scoped`, `user_count`, `created_at` and `updated_at` columns to the `wiz_user_role` table, with optional quals `builtin` and `is_project_scoped`.
+- Added `status` and `updated_at` columns to the `wiz_user` table.
+- Added `*_system_health_issue_count` columns to the `wiz_subscription` table.
+
+_Bug fixes_
+
+- Fixed a panic when credentials are set only through the `WIZ_AUTH_CLIENT_ID`, `WIZ_AUTH_CLIENT_SECRET` and `WIZ_URL` environment variables.
+- Fixed the `client_secret` presence check, which read `client_id` instead.
+- Fixed a panic on network errors while requesting an access token.
+- Fixed the filter-only `framework_category_id` column of the `wiz_control` and `wiz_issue` tables, which dropped every row when a query had two or more `in` lists. List filters on it are not supported; use a single value.
+- Fixed the `created_at` filter on the `wiz_issue` table and the `analyzed_at` filter on the `wiz_cloud_configuration_finding` table, which kept only one bound when both were given. Time filters now keep sub-second precision. A single `in` list on a timestamp is split by the SDK into one API call per value; only when a query has 2+ list quals is the timestamp list left to Postgres to filter.
+
+_Breaking changes_
+
+- The `wiz_vulnerability_finding` table now returns findings in all statuses (`OPEN`, `RESOLVED`, `REJECTED`) when `status` is not filtered. Before, the Wiz API returned only open findings, so counts without a `status` filter now include resolved and rejected findings. The new `wiz_sast_finding`, `wiz_secret_finding` and `wiz_iac_finding` tables behave the same way.
+- Findings statuses are `OPEN`, `RESOLVED` and `REJECTED`. The Wiz API treats `IN_PROGRESS` as `OPEN` for findings, so these tables never return it, and a filter on `IN_PROGRESS` alone returns no rows. `wiz_vulnerability_finding.status` no longer accepts the old values `UNRESOLVED`, `PASSED` and `IGNORED`. The `vulnerability_external_id` qual now uses `vulnerabilityExternalIdV2`.
+- `wiz_user.identity_provider_type` now returns `SSO` instead of `SAML` (the Wiz API renamed the value). Queries filtering on `'SAML'` must use `'SSO'`.
+- Moved queries off other fields Wiz has deprecated:
+  - `wiz_issue` now uses `issuesV2` and `sourceRules`. The `control_id` qual filters by source rule; `control_id` returns the matching source rule, or else the first source rule of type control.
+  - `wiz_control.tags` is now built from `tagsV2` as `key` or `key:value` strings.
+  - `wiz_project.project_owners` now comes from `projectOwnersV2` (owner identities), and `resource_tag_links` from `resourceFilterLinks`.
+  - `wiz_user.role` is now the effective role.
+  - `wiz_user_role` now uses `userRolesV2`.
+
+_Deprecations_
+
+- `wiz_subscription.status` and `wiz_user.is_analytics_enabled`, `ip_address` and `tenant_id` are still served but deprecated by Wiz with no replacement, and may stop returning data in a future Wiz API release.
+
 ## v1.3.0 [2025-10-13]
 
 _Dependencies_
