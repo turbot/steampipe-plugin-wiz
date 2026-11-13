@@ -29,6 +29,7 @@ func tableWizProject(ctx context.Context) *plugin.Table {
 			{Name: "archived", Type: proto.ColumnType_BOOL, Description: "If true, the project was archived."},
 			{Name: "business_unit", Type: proto.ColumnType_STRING, Description: "The project business unit."},
 			{Name: "security_score", Type: proto.ColumnType_INT, Description: "Security score is based on the number of successful assessments that ran on this project out of the total assessments."},
+			{Name: "cloud_account_links", Type: proto.ColumnType_JSON, Description: "The cloud accounts linked to the project, each with the environment (PRODUCTION, STAGING, DEVELOPMENT, TESTING or OTHER) it has in this project."},
 			{Name: "cloud_account_count", Type: proto.ColumnType_INT, Description: "The count of cloud account associated with the project."},
 			{Name: "cloud_organization_count", Type: proto.ColumnType_INT, Description: "The count of cloud organizations associated with the project."},
 			{Name: "entity_count", Type: proto.ColumnType_INT, Description: "The count of the entity."},

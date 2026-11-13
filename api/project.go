@@ -39,6 +39,16 @@ query ListProjects($first: Int, $after: String) {
         id
       }
       identifiers
+      cloudAccountLinks {
+        environment
+        shared
+        cloudAccount {
+          id
+          externalId
+          name
+          cloudProvider
+        }
+      }
       resourceTagLinks {
         environment
         resourceTags {
@@ -75,6 +85,16 @@ query GetProject($id: ID!) {
       id
     }
     identifiers
+    cloudAccountLinks {
+      environment
+      shared
+      cloudAccount {
+        id
+        externalId
+        name
+        cloudProvider
+      }
+    }
     resourceTagLinks {
       environment
       resourceTags {
@@ -98,6 +118,21 @@ type ProjectResourceTagLinks struct {
 	ResourceTags []ResourceTag `json:"resourceTags"`
 }
 
+// Project cloud account link object
+type ProjectCloudAccountLink struct {
+	CloudAccount ProjectCloudAccount `json:"cloudAccount"`
+	Environment  string              `json:"environment"`
+	Shared       bool                `json:"shared"`
+}
+
+// Cloud account linked to a project
+type ProjectCloudAccount struct {
+	CloudProvider string `json:"cloudProvider"`
+	ExternalId    string `json:"externalId"`
+	Id            string `json:"id"`
+	Name          string `json:"name"`
+}
+
 // Risk profile object
 type ProjectRiskProfile struct {
 	BusinessImpact string `json:"businessImpact"`
@@ -113,6 +148,7 @@ type ResourceTag struct {
 type Project struct {
 	Archived               bool                      `json:"archived"`
 	BusinessUnit           string                    `json:"businessUnit"`
+	CloudAccountLinks      []ProjectCloudAccountLink `json:"cloudAccountLinks"`
 	CloudAccountCount      int                       `json:"cloudAccountCount"`
 	CloudOrganizationCount int                       `json:"cloudOrganizationCount"`
 	Description            string                    `json:"description"`
