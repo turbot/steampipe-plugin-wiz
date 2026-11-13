@@ -1,7 +1,7 @@
 package wiz
 
 import (
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
 )
 
 type wizConfig struct {
@@ -16,9 +16,9 @@ func ConfigInstance() interface{} {
 
 // GetConfig :: retrieve and cast connection config from query data
 func GetConfig(connection *plugin.Connection) wizConfig {
-	if connection == nil || connection.Config == nil {
+	if connection == nil || connection.GetConfig() == nil {
 		return wizConfig{}
 	}
-	config, _ := connection.Config.(wizConfig)
+	config, _ := connection.GetConfig().(wizConfig)
 	return config
 }

@@ -3,8 +3,8 @@ package wiz
 import (
 	"context"
 
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin"
-	"github.com/turbot/steampipe-plugin-sdk/v5/plugin/transform"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin"
+	"github.com/turbot/steampipe-plugin-sdk/v6/plugin/transform"
 	"github.com/turbot/steampipe-plugin-wiz/errors"
 )
 
@@ -18,7 +18,11 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			NewInstance: ConfigInstance,
 		},
 		DefaultGetConfig: &plugin.GetConfig{
-			ShouldIgnoreError: errors.NotFoundError,
+			IgnoreConfig: &plugin.IgnoreConfig{
+				ShouldIgnoreErrorFunc: func(_ context.Context, _ *plugin.QueryData, _ *plugin.HydrateData, err error) bool {
+					return errors.NotFoundError(err)
+				},
+			},
 		},
 		DefaultTransform: transform.FromCamel().NullIfZero(),
 		TableMap: map[string]*plugin.Table{
