@@ -26,6 +26,7 @@ func Plugin(ctx context.Context) *plugin.Plugin {
 			"wiz_cloud_configuration_finding": tableWizCloudConfigurationFinding(ctx),
 			"wiz_control":                     tableWizControl(ctx),
 			"wiz_issue":                       tableWizIssue(ctx),
+			"wiz_kubernetes_cluster":          tableWizKubernetesCluster(ctx),
 			"wiz_project":                     tableWizProject(ctx),
 			"wiz_security_category":           tableWizSecurityCategory(ctx),
 			"wiz_security_framework":          tableWizSecurityFramework(ctx),
